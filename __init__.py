@@ -1,4 +1,4 @@
-from data.raw.name_list import student_names
+from ngwshare.data.raw.name_list import student_names
 import random
 
 def get_name():
