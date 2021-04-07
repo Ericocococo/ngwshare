@@ -1,4 +1,0 @@
-# ngwshare
-data api
-
-init

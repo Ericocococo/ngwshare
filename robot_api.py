@@ -1,5 +1,5 @@
 __author__ = 'wangjian'
-import ngshare as ng
+import ngwshare as ng
 
 
 # 获取所有 机器人id

@@ -1,9 +1,9 @@
 import datetime
-import ngshare as ng
+import ngwshare as ng
 import time
 import pandas as pd
 # pd.set_option('display.height',1000)
-from ngshare.utils.date_util import str2datetime
+from ngwshare.utils.date_util import str2datetime
 
 pd.set_option('display.max_rows',500)
 pd.set_option('display.max_columns',500)
@@ -476,15 +476,22 @@ pd.set_option('display.width',1000)
 
 # data = ng.get_plate_data_inner(code='asdasd', innercode=2000018, freq='5m', adj='qfq', bars=300)
 # print(data)
+# # #
+# # # a = data['date'].values[-1]
+# # # print(a,type(a))
 # #
-# # a = data['date'].values[-1]
-# # print(a,type(a))
-#
 # data = ng.get_plate_data_inner_raw(innercode=2000018, freq='5m', adj='qfq', bars=300)
 # print(data)
 
+# h = ng.get_stock_data(code="002705.SZ",  freq='30m', adj='qfq', end = '2020-08-31' ,bars=1000)
+# print(h)
+
+# h = ng.get_stock_data(code="600507.SH",  freq='d', adj='qfq', start='2015-01-01',end = '2016-08-31')
+# print(h)
 
 
+h_raw = ng.get_stock_data(code='600519.SH', innercode=3143, freq='d', adj='qfq',end='2021-03-31', bars=300)
+print(h_raw)
 
 # data = ng.get_stock_data(code='000029.SZ', freq='d', adj='qfq', end='2020-08-05',bars=300)
 # print(data)
@@ -528,10 +535,10 @@ pd.set_option('display.width',1000)
 
 
 
-# a = ng.get_stock_data_inner(code='000300.SH',innercode=2131, freq='d', bars=1)
+# a = ng.get_stock_data_inner(code='000300.SH',innercode=2131, freq='1m', bars=100)
 # print(a)
-#
-#
+
+
 # bm_value = ng.get_stock_data_inner(code='000300.SH',innercode=2131, freq='d', bars=1).close.values[-1]
 # print(bm_value)
 
@@ -631,7 +638,7 @@ pd.set_option('display.width',1000)
 #     "table": table,
 #     "field_list": field_list,
 #     "alterField": "EndDate",
-#     "startDate": "2020-06-01",
+#     "startDate": "2020-07-05",
 #     "endDate": "2020-07-07",
 # }
 # data = ng.get_fromDate(body=body)
@@ -661,7 +668,8 @@ pd.set_option('display.width',1000)
 
 
 
-
+# data = ng.get_stock_data(code='300940.SZ', freq='d',adj='qfq', end='2021-02-05',bars=2, innercode=249)
+# print(data)
 
 
 
@@ -672,6 +680,7 @@ pd.set_option('display.width',1000)
 # data = ng.get_north_capital(start_date='2020-09-01', end_date='2020-09-01')
 # print(data)
 
+
 # data = ng.get_north_top10(start_date='2020-09-01', end_date='2020-09-01')
 # print(data)
 
@@ -679,7 +688,7 @@ pd.set_option('display.width',1000)
 # stock_close_df = ng.get_stock_data(code='600175.SH', freq='d', adj='qfq', bars=1)
 # print(stock_close_df)
 
-# stock_close_df = ng.get_stock_data(code='600109.SH', freq='d', adj='qfq', start='2020-10-09', end='2020-10-09')
+# stock_close_df = ng.get_stock_data(code='600109.SH', freq='1m', adj='qfq', start='2019-10-09', end='2020-10-09')
 # print(stock_close_df)
 
 # stock_close_df = ng.get_stock_data(code='000661.SZ', freq='d', adj='qfq', end='2019-02-25', bars=1)
@@ -728,7 +737,7 @@ pd.set_option('display.width',1000)
 
 # data = ng.get_allPlate()
 # print(data)
-
+#
 # d = h_raw = ng.get_plate_data_inner(code='880003', innercode=2000002, freq='d', adj='qfq', bars=300)
 # print(d)
 
@@ -773,12 +782,13 @@ pd.set_option('display.width',1000)
 
 # t11 = time.time()
 # import ngshare as ng
+
 # # 获取全部基金
 # a = ng.get_all_funds()
 # print(a)
 #
-# # a = ng.get_fund_data(code='510300.SH', innercode=5236, freq='d', adj='qfq', bars=20)
-# # print(a)
+# a = ng.get_fund_data(code='510300.SH', innercode=5236, freq='d', adj='qfq', bars=20)
+# print(a)
 # # a = ng.get_fund_data(code='510300.SH', innercode=5236, freq='d', adj='qfq', end='2020-11-30', bars=20)
 # # print(a)
 # # a = ng.get_fund_data(code='510300.SH', innercode=5236, freq='d', adj='qfq', start='2020-11-02', end='2020-11-30')
@@ -799,6 +809,7 @@ t1 = time.time()
 
 # a = ng.get_funds_depth(code='510300.SH')
 # print(a)
+
 # a = ng.get_funds_depth(code='510300.SH',innercode=5236)
 # print(a)
 
@@ -822,15 +833,23 @@ t1 = time.time()
 
 # # data = ng.get_allStock()
 # # print(data)
-# #
-data = ng.get_all_funds()
-print(data)
 
-a = ng.get_funds_depth(code='150270.SZ',innercode=7548)
-print(a)
+# data = ng.get_all_funds()
+# print(data)
+# a = data.loc[data['TradingCode'] == '515050.SH']
+# print(a)
 
-a = data.loc[data['TradingCode'] == '150270.SZ']
-print(a)
+
+# a = ng.get_allPlate()
+# print(a)
+
+
+
+# a = ng.get_funds_depth(code='150270.SZ',innercode=7548)
+# print(a)
+#
+# a = data.loc[data['TradingCode'] == '150270.SZ']
+# print(a)
 
 #
 # # code = '511880.SH'
@@ -841,6 +860,14 @@ print(a)
 
 
 
+# a = data.loc[data['TradingCode'] == '150270.SZ']
+# print(a)
+#
+# a = ng.get_fund_data(code='150270.SZ', innercode=5662, freq='d', adj='qfq', end='2020-11-30', bars=1)
+# print(a)
+
+
+
 # a = ng.get_fund_data(code='511880.SH', innercode=5662, freq='d', adj='qfq', end='2020-11-30', bars=1)
 # print(a)
 
@@ -848,37 +875,151 @@ print(a)
 # a = ng.get_fund_data(code='511880.SH', innercode=5662, freq='d', adj='qfq', bars=1)
 # print(a)
 
+#
+# bm_data = ng.get_fund_data(code='511880.SH', innercode=5662, freq='d', adj='qfq', bars=2)
+# print(bm_data)
+# bm_value = round(float(bm_data.iloc[-1]['close']), 4)
+# print(bm_value)
+#
+# bm_data = ng.get_stock_data_inner(code='000300.SH', innercode=2131, freq='d', bars=2)
+# print(bm_data)
+# bm_value = round(float(bm_data.iloc[-1]['close']), 4)
+# print(bm_value)
+
+
+# data = ng.get_allStock()
+# print(data)
 
 
 
+# innercode = data.loc[data['code']=='000001.SH']['innercode'].tolist()[0]
+# print(innercode)
+# stock_close_df = ng.get_stock_data(code='000001.SH',innercode=innercode, freq='d', adj='qfq', bars=2)
+# print(stock_close_df)
+#
+# value = round(float(stock_close_df.iloc[0]['close']), 4)
+# print(value)
+#
+#
+# open = stock_close_df['open'].tolist()[0]
+# print(open)
+# close = stock_close_df['close'].tolist()[0]
+# print(close)
+
+
+# bm_data = ng.get_stock_data_inner(code='000016.SH', innercode=2122, freq='d', bars=2)
+# print(bm_data)
+# bm_value = round(float(bm_data.iloc[-1]['close']), 4)
+# print(bm_value)
 
 
 
-data = ng.get_allStock()
-print(data)
-innercode = data.loc[data['code']=='000001.SH']['innercode'].tolist()[0]
-print(innercode)
-stock_close_df = ng.get_stock_data(code='000001.SH',innercode=innercode, freq='d', adj='qfq', bars=2)
-print(stock_close_df)
+# ng.get_plate_data_inner()
+#
+#
+#
+# bm_data = ng.get_stock_data(code='000016.SH', freq='d', adj='qfq', end='2020-10-23', bars=2)
+# print(bm_data)
+# print(bm_data['close'].tolist()[-1])
+# bm_value = round(float(bm_data.iloc[-1]['close']), 4)
+# print(bm_value)
+#
+# bm_value = ng.get_k_data(code='000016.SH', freq='d', start='2020-10-23', end='2020-10-23').close.values[-1]
+# print(bm_value)
 
-value = round(float(stock_close_df.iloc[0]['close']), 4)
-print(value)
 
 
-open = stock_close_df['open'].tolist()[0]
-print(open)
-close = stock_close_df['close'].tolist()[0]
-print(close)
+# a = ng.return_last_trading_day()
+# print(a)
 
+# data = ng.get_allStock()
+# print(data)
+
+
+
+# a = ng.get_allStockData(adj='qfq', date='2020-01-07')
+# print(a)
+
+
+# stock_close_df = ng.get_stock_data(code='600109.SH', freq='1m', adj='qfq', bars=200)
+# print(stock_close_df)
+# stock_close_df = ng.get_stock_data(code='600109.SH', freq='1m', adj='qfq', start='2020-12-07', end='2020-12-09')
+# print(stock_close_df)
+# stock_close_df = ng.get_stock_data(code='600109.SH', freq='1m', adj='qfq', start='2020-12-07 10:30:00', end='2020-12-09 14:30:00')
+# print(stock_close_df)
+# stock_close_df = ng.get_stock_data(code='600109.SH', freq='1m', adj='qfq', end='2020-12-09', bars=200)
+# print(stock_close_df)
+# stock_close_df = ng.get_stock_data(code='600109.SH', freq='1m', adj='qfq', end='2020-12-09 13:58:00', bars=200)
+# print(stock_close_df)
+
+
+# stock_close_df = ng.get_stock_data(code='600109.SH', freq='5m', adj='qfq', bars=200)
+# print(stock_close_df)
+# stock_close_df = ng.get_stock_data(code='600109.SH', freq='5m', adj='qfq', start='2020-11-09', end='2020-12-09')
+# print(stock_close_df)
+# stock_close_df = ng.get_stock_data(code='600109.SH', freq='5m', adj='qfq', start='2020-11-09 10:30:00',
+#                                    end='2020-12-09 14:30:00')
+# print(stock_close_df)
+# stock_close_df = ng.get_stock_data(code='600109.SH', freq='5m', adj='qfq', end='2020-12-09', bars=200)
+# print(stock_close_df)
+# stock_close_df = ng.get_stock_data(code='600109.SH', freq='5m', adj='qfq', end='2020-12-09 14:00:00', bars=200)
+# print(stock_close_df)
 
 
 print(time.time()-t1)
 
 
+# t_date = '2021-02-03'
+# bm_value = ng.get_k_data(code='399006.SZ', freq='d', start=t_date, end=t_date).close.values[-1]
+# print(bm_value)
+#
+# print(ng.get_k_data(code='399006.SZ', freq='d', start=t_date, end=t_date))
+#
+# bm_data = ng.get_stock_data_inner(code='399006.SZ', innercode=2121, freq='d', bars=2)
+# print(bm_data)
+
+
+# data = ng.get_stock_data_inner(code='000300.SH',innercode=2131, freq='d', bars=2)
+# print(data)
+
+
+# bm_value = ng.get_fund_data(code='511880.SH', innercode=5662, freq='d', adj='qfq', bars=2)
+# print(bm_value)
+#
+# all_funds = ng.get_all_funds()
+# print(all_funds)
 
 
 
+# bm_value = round(float(bm_data.iloc[-1]['close']), 4)
+# print(bm_value)
 
 
+# a = ng.get_all_funds()
+# print(a)
+# b = a.loc[a.TradingCode=='515790.SH']
+# print(b)
+#
+#
+# c = ng.get_fund_data(innercode=95444,code='515790.SH',freq='d', adj='qfq',end='2021-02-03',bars=10)
+# print(c)
+
+
+# a = ng.sent_dingding2('asdasdasd',[13087005272],False)
+# print(a)
+
+# ng.sent_dingding2('【success】两融-综合数据！',[13087005272],False)
+#
+# ng.sent_dingding2('【success】两融-综合数据！',[13087005272],False)
+
+
+# t_date = '2021-02-03'
+#
+# bm_value = ng.get_k_data(code='688004.SH', freq='d', start=t_date, end=t_date)
+# print(bm_value)
+
+
+# data = ng.get_hisTick(symbol='rb2103',exchange='SHFE',start='2021-02-01 13:30:00',end='2021-02-02 14:30:00')
+# print(data)
 
 

@@ -13,3 +13,5 @@ def get_ua():
     ua = " ".join(["Mozilla/5.0", random.choice(os_type), "AppleWebKit/537.36",
                    "(KHTML, like Gecko)", chrome_version, "Safari/537.36"])
     return ua
+
+

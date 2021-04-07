@@ -1,4 +1,4 @@
-import ngshare as ng
+import ngwshare as ng
 import time
 import pandas as pd
 # pd.set_option('display.height',1000)
@@ -6,12 +6,17 @@ pd.set_option('display.max_rows',5000)
 pd.set_option('display.max_columns',5000)
 pd.set_option('display.width',10000)
 
+
+
 # data = ng.get_hisBar(symbol='rb2011',exchange='SHFE',freq='1m',start='2020-09-01',end='2020-10-20')
 # print(data)
 
 
-# data = ng.get_hisBar(symbol='rbM',exchange='SHFE',freq='1m',start='2020-01-01',end='2020-10-20')
+
+# data = ng.get_hisBar(symbol='agM',exchange='SHFE',freq='1m',start='2021-03-26',end='2021-03-30')
 # print(data)
+
+
 
 # data = ng.get_hisBar(symbol='rbM',exchange='SHFE',freq='1m',start='2019-01-01',end='2019-10-01')
 # print(data)
@@ -50,7 +55,7 @@ pd.set_option('display.width',10000)
 # data = ng.get_hisBar(symbol='ag2101',exchange='SHFE',freq='1m',start='2020-10-29 09:00:00',end='2020-10-30 15:00:00')
 # print(data)
 #
-# data = ng.get_hisBar(symbol='hcM',exchange='SHFE',freq='1m',start='2020-10-20 09:00:00',end='2020-10-30 15:00:00')
+# data = ng.get_hisBar(symbol='hcM',exchange='SHFE',freq='1m',start='2021-02-21 09:00:00',end='2021-02-25 15:00:00')
 # print(data)
 
 # data = ng.get_hisBar(symbol='ag2101',exchange='SHFE',freq='5m',start='2020-10-29 09:00:00',end='2020-10-30 15:00:00')
@@ -61,7 +66,16 @@ pd.set_option('display.width',10000)
 # print(data)
 # data = ng.get_hisBar(symbol='ag2101',exchange='SHFE',freq='60m',start='2020-10-29 09:00:00',end='2020-10-30 15:00:00')
 # print(data)
+
+
 # data = ng.get_hisBar(symbol='ag2101',exchange='SHFE',freq='1d',start='2020-10-28 09:00:00',end='2020-10-30 15:00:00')
+# print(data)
+
+# data = ng.get_hisBar(symbol='ag2105',exchange='SHFE',freq='10s',start='2020-10-28 09:00:00',end='2020-10-30 15:00:00')
+# print(data)
+
+
+# data = ng.get_hisBar(symbol='ag2105',exchange='SHFE',freq='1m',count=100)
 # print(data)
 
 
@@ -79,13 +93,18 @@ pd.set_option('display.width',10000)
 # t1 = time.time()
 
 # # Tick
-#
-# data = ng.get_hisTick(symbol='rb2101',exchange='SHFE',count=1)
+
+# data = ng.get_hisTick(symbol='rb2104',exchange='SHFE',count=1)
 # print(data)
 
 
-# data = ng.get_hisTick(symbol='rb2101',exchange='SHFE',start='2020-11-10 13:30:00',end='2020-11-10 14:30:00')
+# data = ng.get_hisTick(symbol='rb2103',exchange='SHFE',start='2021-02-01 13:30:00',end='2021-02-02 14:30:00')
 # print(data)
+
+
+# data = ng.get_hisTick(symbol='rb2103',exchange='SHFE',end='2021-02-02 14:30:00',count=10)
+# print(data)
+
 
 # # 获取用户持仓
 # import hashlib
@@ -161,10 +180,24 @@ pd.set_option('display.width',10000)
 # print(data)
 
 
+
+
 # # 获取主力合约
-# data = ng.get_main_contract(variety_code='rb')
+# data = ng.get_main_contract(variety_code='v')
 # print(data)
 # print(data['symbol'])
+
+
+
+
+# universe = 'cM.DCE'
+# variety = universe.split(".")[0][:-1]
+# market = universe.split(".")[1]
+# print(variety)
+# main_symbol = ng.get_main_contract(variety_code=variety)["symbol"]+"."+market
+# universe = main_symbol
+#
+# print(universe)
 
 
 # # 获取一个时间段的 交易时间
@@ -182,6 +215,8 @@ pd.set_option('display.width',10000)
 # print(data)
 
 
+
+
 # a = data.loc[data['varietyCode']=='cs']
 # print(a)
 #
@@ -194,13 +229,21 @@ pd.set_option('display.width',10000)
 
 
 # # 获取乘数、保证金比率
-all_margin_ratios = ng.get_all_margin_ratios()
-print(all_margin_ratios)
+# all_margin_ratios = ng.get_all_margin_ratios()
+# print(all_margin_ratios)
 # data = all_margin_ratios[all_margin_ratios.varietyID==10]
 # print(data)
 # data = all_margin_ratios[(all_margin_ratios.varietyID==23) & (all_margin_ratios['code']=='!')]
 # print(data)
 # data = all_margin_ratios[(all_margin_ratios.varietyID==23) & (all_margin_ratios['code']=='!')]['ratio'].tolist()[-1]
+# print(data)
+
+
+
+# # 获取手续费率
+# ratio_data = ng.get_all_commission_raw()
+# print(ratio_data)
+# data = ratio_data[ratio_data.varietyID==23]
 # print(data)
 
 

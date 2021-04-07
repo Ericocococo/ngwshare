@@ -2,7 +2,7 @@
 __author__ = 'wangjian'
 import pyodbc
 
-from ngshare.constants import ODBC_D
+from ngwshare.constants import ODBC_D
 
 class ODBC:
     def __init__(self,server,uid,pwd,db,DRIVER='{SQL Server}'):

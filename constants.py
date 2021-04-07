@@ -2,7 +2,6 @@ __author__ = 'wangjian'
 
 
 # ODBC_D = '{SQL Server}'
-
 ODBC_D = '/opt/microsoft/msodbcsql/lib64/libmsodbcsql-13.1.so.9.2'
 
 # -----------------------------------------------------------------------------------------
@@ -73,7 +72,7 @@ MYSQL_2_PASSWORD = 'tjXx^Egw3NdnLK'
 
 # -----------------------------------------------------------------------------------------
 # # 主要获取板块信息、基金数据
-
+#
 # # 测试
 # SQL_SERVER_HOST = '192.168.3.112'
 # SQL_SERVER_DATABASE = 'DB_INFORMATION'
