@@ -5,12 +5,12 @@ import requests
 import datetime
 import pandas as pd
 import numpy as np
-from ngshare.conn_db.conn_sqlserver import conn_sqlserver_select
-from ngshare.conn_db.conn_mysql import conn_mysql_select
-from ngshare.utils.date_util import str2datetime, get_date_length, is_trading_day
-# from ngshare.utils.log_util import logger
-from ngshare.utils.http_util import get_ua
-from ngshare.constants import (
+from ngwshare.conn_db.conn_sqlserver import conn_sqlserver_select
+from ngwshare.conn_db.conn_mysql import conn_mysql_select
+from ngwshare.utils.date_util import str2datetime, get_date_length, is_trading_day
+from ngwshare.utils.log_util import logger
+from ngwshare.utils.http_util import get_ua
+from ngwshare.constants import (
     MYSQL_HOST,
     MYSQL_PORT,
     MYSQL_DATABASE,
@@ -19,7 +19,7 @@ from ngshare.constants import (
     HOST,
     PRE
 )
-from ngshare.constants import (
+from ngwshare.constants import (
     SQL_SERVER_HOST,
     SQL_SERVER_DATABASE,
     SQL_SERVER_USER,

@@ -39,6 +39,7 @@ from ngwshare.data.us_data import *
 from ngwshare.data.contract_guba import *
 from ngwshare.data.contract_extra import *
 from ngwshare.data.statistics_data import *
+from ngwshare.data.factor import *
 
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
@@ -1293,6 +1294,24 @@ def get_allStock():
             return None
 
 
+def get_allStockNew():
+    try:
+        headers = {'User-Agent': get_ua()}
+        url = "https://stq.niuguwang.com/ft/innercode"
+        # print(url)
+        response = requests.get(url, headers=headers)
+        response.close()
+    except Exception:
+        print(traceback.format_exc())
+    else:
+        response_json = json.loads(response.content.decode())
+        if response_json["resultCode"] == 0:
+            df_data = pd.DataFrame(response_json['data'])
+            return df_data
+        else:
+            return None
+
+
 # def get_allStock():
 #     sql_info = {
 #         'host':MYSQL_HOST,
@@ -1437,7 +1456,7 @@ def get_price_raw(codes=None):
     # codes_list = [str(i).split('.')[1].lower() + i.split('.')[0] for i in codes]
     codes_ = ','.join(codes_list)
     url = "{}hq.niuguwang.com/aquote/quotedata/batchstockprice.ashx?codes={}".format(pre, codes_)
-    print(url)
+    # print(url)
     try:
         headers = {
             'User-Agent': get_ua()}

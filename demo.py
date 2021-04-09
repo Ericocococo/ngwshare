@@ -490,8 +490,17 @@ pd.set_option('display.width',1000)
 # print(h)
 
 
-h_raw = ng.get_stock_data(code='600519.SH', innercode=3143, freq='d', adj='qfq',end='2021-03-31', bars=300)
-print(h_raw)
+# h_raw = ng.get_stock_data(code='000001.SZ', innercode=1, freq='30m', adj='qfq', bars=300)
+# print(h_raw)
+# h_raw = ng.get_stock_data(code='000001.SZ', innercode=1, freq='5m', adj='qfq', bars=300)
+# print(h_raw)
+# h_raw = ng.get_stock_data(code='000001.SZ', innercode=1, freq='15m', adj='qfq', bars=300)
+# print(h_raw)
+# h_raw = ng.get_stock_data(code='000001.SZ', innercode=1, freq='60m', adj='qfq', bars=300)
+# print(h_raw)
+# h_raw = ng.get_stock_data(code='000001.SZ', innercode=1, freq='1m', adj='qfq', bars=500)
+# print(h_raw)
+
 
 # data = ng.get_stock_data(code='000029.SZ', freq='d', adj='qfq', end='2020-08-05',bars=300)
 # print(data)
@@ -647,13 +656,13 @@ print(h_raw)
 
 
 
-# data = ng.get_ShareHolding(type='SZ', start='2020-09-01', end='2020-09-28')
+# data = ng.get_ShareHolding(type='SZ', start='2021-04-07', end='2021-04-08')
 # print(data)
-# data = ng.get_ShareHolding(type='SH', start='2020-09-01', end='2020-09-28')
+# data = ng.get_ShareHolding(type='SH', start='2021-04-07', end='2021-04-08')
 # print(data)
 # data = ng.get_ShareHolding(type='HKSHSZ', start='2020-09-01', end='2020-09-28')
 # print(data)
-#
+
 
 
 
@@ -756,10 +765,15 @@ print(h_raw)
 # print(data)
 
 
-# data = ng.get_allStock()
-# print(data)
-#
-#
+data = ng.get_allStock()
+print(data)
+
+# 获取A股所有股票代码+退市
+data = ng.get_allStockNew()
+print(data)
+
+
+
 # data = ng.get_allStockData(adj='qfq',date='2020-10-23')
 # print(data)
 
@@ -781,7 +795,7 @@ print(h_raw)
 
 
 # t11 = time.time()
-# import ngshare as ng
+# import ngwshare as ng
 
 # # 获取全部基金
 # a = ng.get_all_funds()
