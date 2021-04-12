@@ -39,7 +39,7 @@ def get_OPF_Bouns(code=None):
 
 
 if __name__ == '__main__':
-    import ngshare as ng
+    import ngwshare as ng
     import datetime
 
     code = '000001'

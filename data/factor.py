@@ -3,8 +3,8 @@ import json
 import time
 import traceback
 
-from ngshare.utils.date_util import str2datetime
-from ngshare.utils.http_util import get_ua
+from ngwshare.utils.date_util import str2datetime
+from ngwshare.utils.http_util import get_ua
 import pandas as pd
 import datetime
 
@@ -44,9 +44,9 @@ if __name__ == '__main__':
 
     body = {
         'stock_list': ['000002.SZ','000008.SZ'],
-        'start': '2021-04-05',
+        'start': '2021-01-05',
         'end': '2021-04-06',
-        'field_list': ['factor10', 'factor12', 'factor9']
+        'field_list': ['alpha3', 'alpha13', 'alpha26', 'cash2price', 'SEWithoutMIToTL']
     }
     data = ng.getFactor(body=body)
     print(data)

@@ -1,7 +1,7 @@
 __author__ = 'wangjian'
 import datetime
 import time
-import ngshare as ng
+import ngwshare as ng
 import pandas as pd
 
 
