@@ -36,6 +36,20 @@ def upsertFactor(body=None):
     except Exception:
         print(traceback.format_exc())
 
+def getFactorColumns():
+    url = 'https://stq.niuguwang.com/factor/GetFactorColumns'
+    try:
+        headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
+        response = requests.get(url,headers=headers).content.decode()
+        response_json = json.loads(response)
+        # print(response_json)
+        if response_json['resultCode'] == 0:
+            return response_json['data']
+        else:
+            return response_json['data']
+    except Exception:
+        print(traceback.format_exc())
+
 if __name__ == '__main__':
     t11 = time.time()
     import ngwshare as ng

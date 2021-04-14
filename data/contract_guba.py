@@ -90,7 +90,7 @@ def get_GuBaReplyDetail(postId=None):
 
 
 if __name__ == '__main__':
-    import ngshare as ng
+    import ngwshare as ng
 
     # 获取帖子列表
     data = ng.get_GuBaTieZiList(varietyId=10, startTime='2021-03-01', endTime='2021-03-10')

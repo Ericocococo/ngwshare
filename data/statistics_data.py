@@ -77,7 +77,7 @@ def get_SelectSelf(start=None,end=None):
 
 if __name__ == '__main__':
     t11 = time.time()
-    import ngshare as ng
+    import ngwshare as ng
 
 
     data = ng.get_SearchData(start='2021-03-23 00:00:00',end='2021-03-23 23:59:59')

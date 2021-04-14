@@ -42,7 +42,7 @@ if __name__ == '__main__':
     from pprint import pprint
 
     # code_list = ["600006.SH"]
-    code_list = ["000858.SZ", "600722.SH", "000895.SZ", "600006.SH"]
+    code_list = ["600722.SH", "000895.SZ", "600006.SH"]
 
     # field_list = ["EndDate"]
 

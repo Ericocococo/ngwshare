@@ -950,6 +950,9 @@ t1 = time.time()
 # print(data)
 
 
+a = ng.return_last_trading_day()
+print(a)
+
 
 # a = ng.get_allStockData(adj='qfq', date='2020-01-07')
 # print(a)
@@ -957,8 +960,8 @@ t1 = time.time()
 
 # stock_close_df = ng.get_stock_data(code='600109.SH', freq='1m', adj='qfq', bars=200)
 # print(stock_close_df)
-stock_close_df = ng.get_stock_data(code='600109.SH', freq='30m', adj='qfq', start='2015-12-07', end='2018-12-09')
-print(stock_close_df)
+# stock_close_df = ng.get_stock_data(code='600109.SH', freq='30m', adj='qfq', start='2015-12-07', end='2018-12-09')
+# print(stock_close_df)
 # stock_close_df = ng.get_stock_data(code='600109.SH', freq='1m', adj='qfq', start='2020-12-07 10:30:00', end='2020-12-09 14:30:00')
 # print(stock_close_df)
 # stock_close_df = ng.get_stock_data(code='600109.SH', freq='1m', adj='qfq', end='2020-12-09', bars=200)
