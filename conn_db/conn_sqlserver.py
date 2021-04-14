@@ -67,7 +67,7 @@ def conn_sqlserver_insert(sql=None,sql_info=None):
 
 if __name__ == '__main__':
     import datetime
-    import ngshare as ng
+    import ngwshare as ng
     import time
     import pandas as pd
 

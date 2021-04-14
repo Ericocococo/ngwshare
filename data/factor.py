@@ -9,10 +9,9 @@ import pandas as pd
 import datetime
 
 def getFactor(body=None):
-    url = 'http://stq.niuguwang.com/factor/getfactor'
+    url = 'https://stq.niuguwang.com/factor/getfactor'
     try:
-        headers = {"Content-Type": "application/json",
-                   'User-Agent':get_ua()}
+        headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
         response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
         response_json = json.loads(response)
         # print(response_json)
@@ -24,10 +23,9 @@ def getFactor(body=None):
         print(traceback.format_exc())
 
 def upsertFactor(body=None):
-    url = 'http://stq.niuguwang.com/factor/addfactor'
+    url = 'https://stq.niuguwang.com/factor/addfactor'
     try:
-        headers = {"Content-Type": "application/json",
-                   'User-Agent':get_ua()}
+        headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
         response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
         response_json = json.loads(response)
         # print(response_json)
@@ -40,7 +38,7 @@ def upsertFactor(body=None):
 
 if __name__ == '__main__':
     t11 = time.time()
-    import ngshare as ng
+    import ngwshare as ng
 
     body = {
         'stock_list': ['000002.SZ','000008.SZ'],

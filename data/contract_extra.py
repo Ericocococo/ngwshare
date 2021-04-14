@@ -59,13 +59,13 @@ def get_HisMainContract(variety=None,start=None,end=None):
 
 
 if __name__ == '__main__':
-    import ngshare as ng
+    import ngwshare as ng
 
-    # trading_date = ReturnTradingDate(DatetimeStr='2021-03-27 18:09:00')
-    # print(trading_date)
+    trading_date = ReturnTradingDate(DatetimeStr='2021-03-26 01:09:00')
+    print(trading_date)
 
-    data = ng.get_HisMainContract(variety='v', start='2021-04-08', end='2021-04-09')
-    print(data)
+    # data = ng.get_HisMainContract(variety='v', start='2021-04-08', end='2021-04-09')
+    # print(data)
 
 
 

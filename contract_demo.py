@@ -1,3 +1,5 @@
+import datetime
+
 import ngwshare as ng
 import time
 import pandas as pd
@@ -75,9 +77,13 @@ pd.set_option('display.width',10000)
 # print(data)
 
 
-# data = ng.get_hisBar(symbol='ag2105',exchange='SHFE',freq='1m',count=100)
+# data = ng.get_hisBar(symbol='ag2105',exchange='SHFE',freq='d', end='2021-01-01', count=500)
 # print(data)
 
+data = ng.get_hisBar(symbol='agM',exchange='SHFE',freq='d', count=500)
+print(data)
+data = ng.get_hisBar(symbol='agM',exchange='SHFE',freq='d', start='2021-01-01', end='2021-04-01')
+print(data)
 
 # data = ng.contract_depth(symbol='rb2101',exchange='SHFE')
 # print(data)
@@ -201,10 +207,12 @@ pd.set_option('display.width',10000)
 
 
 # # 获取一个时间段的 交易时间
-# data = ng.get_contract_openTime(start='2020-09-01',end='2020-10-01')
+# data = ng.get_contract_openTime(start='2021-04-01',end='2021-04-20')
 # print(data)
-#
-#
+# data['begin'] = [str(datetime.datetime.strptime(i, '%Y%m%d%H%M%S'))[:19] for i in data['begin'].tolist()]
+# data['end'] = [str(datetime.datetime.strptime(i, '%Y%m%d%H%M%S'))[:19] for i in data['end'].tolist()]
+# print(data)
+
 # print(time.time()-t1)
 # # -----------------------------------------------------------------------------------------------------------
 

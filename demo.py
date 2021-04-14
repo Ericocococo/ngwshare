@@ -765,12 +765,12 @@ pd.set_option('display.width',1000)
 # print(data)
 
 
-data = ng.get_allStock()
-print(data)
-
-# 获取A股所有股票代码+退市
-data = ng.get_allStockNew()
-print(data)
+# data = ng.get_allStock()
+# print(data)
+#
+# # 获取A股所有股票代码+退市
+# data = ng.get_allStockNew()
+# print(data)
 
 
 
@@ -957,8 +957,8 @@ t1 = time.time()
 
 # stock_close_df = ng.get_stock_data(code='600109.SH', freq='1m', adj='qfq', bars=200)
 # print(stock_close_df)
-# stock_close_df = ng.get_stock_data(code='600109.SH', freq='1m', adj='qfq', start='2020-12-07', end='2020-12-09')
-# print(stock_close_df)
+stock_close_df = ng.get_stock_data(code='600109.SH', freq='30m', adj='qfq', start='2015-12-07', end='2018-12-09')
+print(stock_close_df)
 # stock_close_df = ng.get_stock_data(code='600109.SH', freq='1m', adj='qfq', start='2020-12-07 10:30:00', end='2020-12-09 14:30:00')
 # print(stock_close_df)
 # stock_close_df = ng.get_stock_data(code='600109.SH', freq='1m', adj='qfq', end='2020-12-09', bars=200)

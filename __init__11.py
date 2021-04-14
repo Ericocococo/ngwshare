@@ -8,6 +8,7 @@ import numpy as np
 from ngwshare.conn_db.conn_sqlserver import conn_sqlserver_select
 from ngwshare.conn_db.conn_mysql import conn_mysql_select
 from ngwshare.utils.date_util import str2datetime, get_date_length, is_trading_day
+from ngwshare.utils.log_util import logger
 from ngwshare.utils.http_util import get_ua
 from ngwshare.constants import (
     MYSQL_HOST,

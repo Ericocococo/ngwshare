@@ -2589,12 +2589,13 @@ def get_contract_openTime_raw(start=None,end=None):
     end_ = end.replace('-','') + '000000'
     body = {"begin": start_, "end": end_}
     # print(body)
+    print(json.dumps(body))
     try:
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6",
             "Content-Type": "application/json"}
         url = "https://apigateway.inquantstudio.com/api/BasicData/GetOpenTimes"
-        # print(url)
+        print(url)
         response = requests.post(url, data=json.dumps(body), headers=headers)
         response.close()
     except Exception:
