@@ -57,12 +57,68 @@ if __name__ == '__main__':
     body = {
         'stock_list': ['000002.SZ','000008.SZ'],
         'start': '2021-01-05',
-        'end': '2021-04-06',
-        'field_list': ['alpha3', 'alpha13', 'alpha26', 'cash2price', 'SEWithoutMIToTL']
+        'end': '2021-04-14',
+        'field_list': ['alpha3', 'alpha13', 'Liquidity', 'ROE', 'NB_ratio']
     }
     data = ng.getFactor(body=body)
     print(data)
 
+
+    columns = ng.getFactorColumns()
+    print(columns)
+    print(len(columns))
+
+    # a = [
+    #                  "alpha3",
+    #                  "alpha13",
+    #                  "alpha26",
+    #                  "alpha44",
+    #                  "alpha50",
+    #                  "HCHL",
+    #                  "HC",
+    #                  "MomAdj",
+    #                  "LC",
+    #                  "Liquidity",
+    #                  "PB",
+    #                  "ROA",
+    #                  "ROE",
+    #                  "OpRGrowth",
+    #                  "cash2price",
+    #                  "DA_ratio",
+    #                  "WC2TA",
+    #                  "GP2TA",
+    #                  "EBITDA2TL",
+    #                  "NBtracking",
+    #                  "EfChg_b60v5",
+    #                  "hurst60",
+    #                  "alpha012",
+    #                  "alpha040",
+    #                  "vroc5",
+    #                  "rvi10",
+    #                  "arc2",
+    #                  "w_r5",
+    #                  "acd20",
+    #                  "SuperQuickRatio",
+    #                  "FixedAssetTRate",
+    #                  "AdminiExpenseRate",
+    #                  "SEWithoutMIToTL",
+    #                  "TOperatingCostToTOR",
+    #                  "SEWMIToInterestBearDebt",
+    #                  "NetOperateCashFlowYOY",
+    #                  "SEWithoutMIGrowRateYTD",
+    #                  "TORGrowRate",
+    #                  "FCFE",
+    #                  "OperatingRevenueYOY",
+    #                  "closeReturn_Last",
+    #                  "Earnings_QG",
+    #                  "NB_shr",
+    #                  "NB_ratio",
+    #     ]
+    # print(len(a))
+    #
+    # for i in a:
+    #     if i not in columns:
+    #         print(i)
     # start_ts = int(str2datetime('2021-04-05').timestamp())
     # end_ts = int(str2datetime('2021-04-06').timestamp())
     # print(start_ts)

@@ -3115,7 +3115,7 @@ def get_OTCFundsValues(code=None,start=None,end=None):
     # except Exception:
     #     print(traceback.format_exc())
 
-    url = 'http://stq.niuguwang.com/funds/values?code={}&start={}&end={}'.format(code,start,end)
+    url = 'https://stq.niuguwang.com/funds/values?code={}&start={}&end={}'.format(code,start,end)
     # print(url)
     try:
         headers = {"Content-Type": "application/json",
@@ -3152,7 +3152,7 @@ def get_OTCFundsInfo(innercode=None):
 
 
 def get_OPF_PORTFOLIO(code=None):
-    url = 'http://stq.niuguwang.com/funds/portfolio?code={}'.format(code)
+    url = 'https://stq.niuguwang.com/funds/portfolio?code={}'.format(code)
     # print(url)
     try:
         headers = {"Content-Type": "application/json",
@@ -3169,7 +3169,7 @@ def get_OPF_PORTFOLIO(code=None):
 
 
 def get_OPF_AssetConfig(code=None):
-    url = 'http://stq.niuguwang.com/funds/AssetConfig?code={}'.format(code)
+    url = 'https://stq.niuguwang.com/funds/AssetConfig?code={}'.format(code)
     # print(url)
     try:
         headers = {"Content-Type": "application/json",
@@ -3186,7 +3186,7 @@ def get_OPF_AssetConfig(code=None):
 
 
 def get_OPF_AssetConfig_Exe(code=None):
-    url = 'http://stq.niuguwang.com/funds/AssetConfig_Exe?code={}'.format(code)
+    url = 'https://stq.niuguwang.com/funds/AssetConfig_Exe?code={}'.format(code)
     # print(url)
     try:
         headers = {"Content-Type": "application/json",
