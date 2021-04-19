@@ -498,8 +498,8 @@ pd.set_option('display.width',1000)
 # print(h_raw)
 # h_raw = ng.get_stock_data(code='000001.SZ', innercode=1, freq='60m', adj='qfq', bars=300)
 # print(h_raw)
-# h_raw = ng.get_stock_data(code='000001.SZ', innercode=1, freq='1m', adj='qfq', bars=500)
-# print(h_raw)
+h_raw = ng.get_stock_data(code='000001.SZ', innercode=1, freq='1m', adj='qfq', bars=500)
+print(h_raw)
 
 
 # data = ng.get_stock_data(code='000029.SZ', freq='d', adj='qfq', end='2020-08-05',bars=300)

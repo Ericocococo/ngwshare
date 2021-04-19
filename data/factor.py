@@ -55,18 +55,28 @@ if __name__ == '__main__':
     import ngwshare as ng
 
     body = {
-        'stock_list': ['000002.SZ','000008.SZ'],
-        'start': '2021-01-05',
-        'end': '2021-04-14',
-        'field_list': ['alpha3', 'alpha13', 'Liquidity', 'ROE', 'NB_ratio']
+        'stock_list': ["000001.SZ"],
+        'start': "2016-12-30",
+        'end': "2021-04-15",
+        'field_list': ng.getFactorColumns(),
     }
-    data = ng.getFactor(body=body)
-    print(data)
+    AlphaDFi = ng.getFactor(body=body)
+    print(AlphaDFi)
 
 
-    columns = ng.getFactorColumns()
-    print(columns)
-    print(len(columns))
+    # body = {
+    #     'stock_list': ['000002.SZ','000008.SZ'],
+    #     'start': '2021-01-05',
+    #     'end': '2021-04-14',
+    #     'field_list': ['alpha3', 'alpha13', 'Liquidity', 'ROE', 'NB_ratio']
+    # }
+    # data = ng.getFactor(body=body)
+    # print(data)
+    #
+    #
+    # columns = ng.getFactorColumns()
+    # print(columns)
+    # print(len(columns))
 
     # a = [
     #                  "alpha3",
@@ -115,7 +125,7 @@ if __name__ == '__main__':
     #                  "NB_ratio",
     #     ]
     # print(len(a))
-    #
+    # #
     # for i in a:
     #     if i not in columns:
     #         print(i)
