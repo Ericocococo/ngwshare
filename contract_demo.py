@@ -80,10 +80,11 @@ pd.set_option('display.width',10000)
 # data = ng.get_hisBar(symbol='ag2105',exchange='SHFE',freq='d', end='2021-01-01', count=500)
 # print(data)
 
-data = ng.get_hisBar(symbol='agM',exchange='SHFE',freq='d', count=500)
-print(data)
-data = ng.get_hisBar(symbol='agM',exchange='SHFE',freq='d', start='2021-01-01', end='2021-04-01')
-print(data)
+# data = ng.get_hisBar(symbol='agM',exchange='SHFE',freq='10s', count=500)
+# print(data)
+
+# data = ng.get_hisBar(symbol='p2109',exchange='DCE',freq='10s', start='2021-04-20', end='2021-04-21')
+# print(data)
 
 # data = ng.contract_depth(symbol='rb2101',exchange='SHFE')
 # print(data)
@@ -193,7 +194,9 @@ print(data)
 # print(data)
 # print(data['symbol'])
 
-
+# # 获取历史主力合约
+# data=ng.get_HisMainContract(variety='v', start='2021-01-01', end='2021-06-09')
+# print(data)
 
 
 # universe = 'cM.DCE'
@@ -277,3 +280,22 @@ print(data)
 #
 #
 # print(time.time()-t1)
+
+
+data = ng.get_spot_price_by_variety('rb', datetime.datetime(2021, 5, 21), datetime.datetime(2021, 6, 21))
+print(data)
+
+contract = ng.get_contract_detail('rb2110', 'SHFE')
+print(contract)
+
+ranks = ng.get_member_rank('rb', datetime.datetime(2021, 5, 21), datetime.datetime(2021, 6, 21), 0)
+print(ranks)
+
+
+
+
+
+
+
+
+

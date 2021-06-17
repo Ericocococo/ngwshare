@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 from ngwshare.conn_db.conn_sqlserver import conn_sqlserver_select,conn_sqlserver_insert
 from ngwshare.conn_db.conn_mysql import conn_mysql_select
+from ngwshare.utils.freq_util import freq_dict
 from ngwshare.utils.date_util import str2datetime, get_date_length, is_trading_day, get_date_min_length
 # from ngwshare.utils.log_util import logger
 from ngwshare.utils.http_util import get_ua
@@ -40,6 +41,9 @@ from ngwshare.data.contract_guba import *
 from ngwshare.data.contract_extra import *
 from ngwshare.data.statistics_data import *
 from ngwshare.data.factor import *
+from ngwshare.data.HaXin import *
+from ngwshare.data.BXdata import *
+from ngwshare.data.ZRZQ import *
 
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
@@ -57,6 +61,9 @@ import hmac
 import hashlib
 import base64
 import urllib.parse
+import warnings
+warnings.filterwarnings("ignore")
+
 
 
 def send_mail_raw(to_addr=None, header=None, content=None):
@@ -679,6 +686,7 @@ def fixing_k_data_mm(data):
 
 
 def fixing_stock_min_data(data,code,start,end,bars,freq):
+    freq_list = freq_dict.get(freq)
     df_data = pd.DataFrame(data)
     data_dict = {}
     data_dict['code'] = [code for _ in range(len(df_data))]
@@ -692,14 +700,27 @@ def fixing_stock_min_data(data,code,start,end,bars,freq):
     data_dict['value'] =  [int(i) for i in df_data['curvalue']]
     df_data_ = pd.DataFrame(data_dict)
     if (not start) and (not end) and bars:
-        return df_data_.sort_values(by='date').reset_index(drop=True)
+        df_data_['new_date'] = df_data_['date'].apply(lambda x: str(x)[11:19])
+        df_data_ = df_data_[df_data_['new_date'].isin(freq_list)]
+        df_data_ = df_data_.sort_values(by='date').reset_index(drop=True)
+        df_data_ = df_data_[['code', 'date', 'open', 'high', 'low', 'close', 'preclose', 'volume', 'value']]
+        return df_data_
     else:
         if bars:
+            # print(df_data_)
+            # print('111111')
             if len(end) == 10:
                 end += ' 23:59:59'
             df_data_n = df_data_.loc[(df_data_["date"] <= end)]
+            # print(df_data_n)
             df_data_n = df_data_n.sort_values(by='date').reset_index(drop=True)
+            # print(df_data_n)
             df_data_n = df_data_n[-bars:].reset_index(drop=True)
+
+            df_data_n['new_date'] = df_data_n['date'].apply(lambda x: str(x)[11:19])
+            df_data_n = df_data_n[df_data_n['new_date'].isin(freq_list)]
+            df_data_n = df_data_n.sort_values(by='date').reset_index(drop=True)
+            df_data_n = df_data_n[['code', 'date', 'open', 'high', 'low', 'close', 'preclose', 'volume', 'value']]
             return df_data_n
         else:
             if len(start) == 10:
@@ -707,10 +728,15 @@ def fixing_stock_min_data(data,code,start,end,bars,freq):
             if len(end) == 10:
                 end += ' 23:59:59'
             if freq in ['1m', '1Min', '1min', '1Minute', '1minute']:
-                df_data_n = df_data_.loc[(df_data_["date"] >= start) & (df_data_["date"] < end)]
+                df_data_n = df_data_.loc[(df_data_["date"] >= start) & (df_data_["date"] <= end)]
             else:
                 df_data_n = df_data_.loc[(df_data_["date"] >= start) & (df_data_["date"] <= end)]
-            return df_data_n.sort_values(by='date').reset_index(drop=True)
+
+            df_data_n['new_date'] = df_data_n['date'].apply(lambda x: str(x)[11:19])
+            df_data_n = df_data_n[df_data_n['new_date'].isin(freq_list)]
+            df_data_n = df_data_n.sort_values(by='date').reset_index(drop=True)
+            df_data_n = df_data_n[['code', 'date', 'open', 'high', 'low', 'close', 'preclose', 'volume', 'value']]
+            return df_data_n
 
 
 
@@ -726,23 +752,28 @@ def get_stock_data_raw(code=None, innercode=None, freq=None, adj=None, start=Non
     """
     # inner_code_dict
     if bars:
-        len = 200 if bars < 100 else 500
-        start = str(str2datetime(end) - datetime.timedelta(days=bars + len))
+        len_ = 200 if bars < 100 else 500
+        start = str(str2datetime(end) - datetime.timedelta(days=bars + len_))
         if get_type_from_freq(freq) in [6]:
-            len = 3000
-            start = str(str2datetime(end) - datetime.timedelta(days=bars + len))
+            len_ = 3000
+            start = str(str2datetime(end) - datetime.timedelta(days=bars + len_))
         if get_type_from_freq(freq) in [9]:
-            len = 10000
-            start = str(str2datetime(end) - datetime.timedelta(days=bars + len))
+            len_ = 10000
+            start = str(str2datetime(end) - datetime.timedelta(days=bars + len_))
 
     if innercode is None:
-        df_ = get_allStock()
         try:
-            innerCode = df_[df_['code'] == code]['innercode'].tolist()[0]
+            num = code[:1]
+            if num in ['5','1']:
+                df_= get_all_funds()
+            else:
+                df_ = get_allStockNew()
+            doc = df_[df_['TradingCode'] == code]['InnerCode'].tolist()
+            if len(doc) == 0:
+                return pd.DataFrame()
+            else:
+                innerCode = doc[0]
         except:
-            return pd.DataFrame()
-        # print(innerCode)
-        if innerCode is None:
             return pd.DataFrame()
     else:
         innerCode = innercode
@@ -758,10 +789,10 @@ def get_stock_data_raw(code=None, innercode=None, freq=None, adj=None, start=Non
 
     # url = ''
     if ex:
-        url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&start={}&count={}&ex={}" \
+        url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&start={}&count={}&ex={}&std=1" \
             .format(pre, innerCode, type, start_, count, ex)
     else:
-        url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&start={}&count={}" \
+        url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&start={}&count={}&std=1" \
             .format(pre, innerCode, type, start_, count)
     # print(url)
     try:
@@ -804,22 +835,26 @@ def get_stock_data_raw_m(code=None, innercode=None, freq=None, adj=None, start=N
     :param end: 结束日期
     :return:
     """
-    # inner_code_dict
     if innercode is None:
-        df_ = get_allStock()
         try:
-            innerCode = df_[df_['code'] == code]['innercode'].tolist()[0]
+            num = code[:1]
+            if num in ['5','1']:
+                df_= get_all_funds()
+            else:
+                df_ = get_allStockNew()
+            doc = df_[df_['TradingCode'] == code]['InnerCode'].tolist()
+            if len(doc) == 0:
+                return pd.DataFrame()
+            else:
+                innerCode = doc[0]
         except:
-            return pd.DataFrame()
-        # print(innerCode)
-        if innerCode is None:
             return pd.DataFrame()
     else:
         innerCode = innercode
 
     type = get_type_from_freq(freq)
     ex = get_ex_from_adj(adj)
-    url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&count={}&ex={}" \
+    url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&count={}&ex={}&std=1" \
         .format(pre, innerCode, type, bars, ex)
     # print(url)
     try:
@@ -844,25 +879,31 @@ def get_stock_data_raw_m(code=None, innercode=None, freq=None, adj=None, start=N
 
 def get_stock_data_min_raw(code=None, innercode=None, freq=None, adj=None, start=None, end=None, bars=None):
     if innercode is None:
-        df_ = get_allStock()
         try:
-            innerCode = df_[df_['code'] == code]['innercode'].tolist()[0]
+            num = code[:1]
+            if num in ['5','1']:
+                df_= get_all_funds()
+            else:
+                df_ = get_allStockNew()
+            doc = df_[df_['TradingCode'] == code]['InnerCode'].tolist()
+            if len(doc) == 0:
+                return pd.DataFrame()
+            else:
+                innerCode = doc[0]
         except:
-            return pd.DataFrame()
-        if innerCode is None:
             return pd.DataFrame()
     else:
         innerCode = innercode
-    # print(innerCode)
+
     ex = get_ex_from_adj(adj)
     type = get_type_from_freq(freq)
 
     if (not start) and (not end) and bars:
         count = bars
         if ex:
-            url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&count={}&ex={}".format(pre, innerCode, type, count, ex)
+            url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&count={}&ex={}&std=1".format(pre, innerCode, type, count, ex)
         else:
-            url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&count={}".format(pre, innerCode, type, count)
+            url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&count={}&std=1".format(pre, innerCode, type, count)
     else:
         if bars:
             count = bars+100
@@ -886,10 +927,10 @@ def get_stock_data_min_raw(code=None, innercode=None, freq=None, adj=None, start
             end_ = str(str2datetime(end) + datetime.timedelta(days=1))
             start_ = end_.replace('-', '').replace(':', '').replace(' ', '')
         if ex:
-            url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&start={}&count={}&ex={}" \
+            url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&start={}&count={}&ex={}&std=1" \
                 .format(pre, innerCode, type, start_, count, ex)
         else:
-            url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&start={}&count={}" \
+            url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&start={}&count={}&std=1" \
                 .format(pre, innerCode, type, start_, count)
     # print(url)
     try:
@@ -990,7 +1031,7 @@ def get_stock_data_inner_raw(innercode=None, freq=None, adj=None, bars=None):
     """
     type = get_type_from_freq(freq)
     ex = get_ex_from_adj(adj)
-    url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&count={}&ex={}" \
+    url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&count={}&ex={}&std=1" \
         .format(pre, innercode, type, bars, ex)
 
     try:
@@ -1021,7 +1062,7 @@ def get_stock_data_inner_rr(code=None, innercode=None, freq=None, adj=None, bars
     """
     type = get_type_from_freq(freq)
     ex = get_ex_from_adj(adj)
-    url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&count={}&ex={}" \
+    url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&count={}&ex={}&std=1" \
         .format(pre, innercode, type, bars, ex)
     # print(url)
     try:
@@ -1076,16 +1117,16 @@ def get_plate_data_inner_rr(code=None, innercode=None, freq=None, adj=None, bars
         end_ = str(str2datetime(end) + datetime.timedelta(days=1))
         start_ = end_.replace('-', '').replace(':', '').replace(' ', '')
         count = bars
-        url = "{}hq.niuguwang.com/aquote/plate/kline.ashx?code={}&type={}&count={}&ex={}&start={}" \
+        url = "{}hq.niuguwang.com/aquote/plate/kline.ashx?code={}&type={}&count={}&ex={}&start={}&std=1" \
             .format(pre, innercode, type, count, ex, start_)
     if start and end and bars is None:
         count = get_date_length(start, end)  # 开始日期到目前截至日期的len
         end_ = str(str2datetime(end) + datetime.timedelta(days=1))
         start_ = end_.replace('-', '').replace(':', '').replace(' ', '')
-        url = "{}hq.niuguwang.com/aquote/plate/kline.ashx?code={}&type={}&count={}&ex={}&start={}" \
+        url = "{}hq.niuguwang.com/aquote/plate/kline.ashx?code={}&type={}&count={}&ex={}&start={}&std=1" \
             .format(pre, innercode, type, count, ex, start_)
     if end is None and bars:
-        url = "{}hq.niuguwang.com/aquote/plate/kline.ashx?code={}&type={}&count={}&ex={}" \
+        url = "{}hq.niuguwang.com/aquote/plate/kline.ashx?code={}&type={}&count={}&ex={}&std=1" \
             .format(pre, innercode, type, bars, ex)
     # print(url)
     try:
@@ -1124,7 +1165,7 @@ def get_plate_data_inner_raw(innercode=None, freq=None, adj=None, bars=None):
     """
     type = get_type_from_freq(freq)
     ex = get_ex_from_adj(adj)
-    url = "{}hq.niuguwang.com/aquote/plate/kline.ashx?code={}&type={}&count={}&ex={}" \
+    url = "{}hq.niuguwang.com/aquote/plate/kline.ashx?code={}&type={}&count={}&ex={}&std=1" \
         .format(pre, innercode, type, bars, ex)
     # print(url)
     try:
@@ -1169,11 +1210,24 @@ def get_plate_data_inner(code=None, innercode=None, freq=None, adj=None, bars=No
 
 # -------------------------------------------------------------------------------------------
 # 获取深度信息
-def get_depth_raw(code=None):
-    df_ = get_allStock()
-    innerCode = df_[df_['code'] == code]['innercode'].tolist()[0]
-    if innerCode is None:
-        return None
+def get_depth_raw(code=None,innercode=None):
+    if innercode is None:
+        try:
+            num = code[:1]
+            if num in ['5','1']:
+                df_= get_all_funds()
+            else:
+                df_ = get_allStockNew()
+            doc = df_[df_['TradingCode'] == code]['InnerCode'].tolist()
+            if len(doc) == 0:
+                return pd.DataFrame()
+            else:
+                innerCode = doc[0]
+        except:
+            return pd.DataFrame()
+    else:
+        innerCode = innercode
+
     url = "{}hq.niuguwang.com/aquote/quotedata/detailfivedish.ashx?code={}".format(pre, innerCode)
     # print(url)
     try:
@@ -1192,11 +1246,11 @@ def get_depth_raw(code=None):
             return None
 
 
-def get_depth(code=None):
+def get_depth(code=None,innercode=None):
     delay_times = 5
     i = 0
     while i < delay_times:
-        data = get_depth_raw(code=code)
+        data = get_depth_raw(code=code,innercode=innercode)
         if data:
             return data
 
@@ -1227,12 +1281,26 @@ def fixing_depth(data, code):
 
 
 # -------------------------------------------------------------------------------------------
-def get_tick_raw(code=None):
+def get_tick_raw(code=None,innercode=None):
     t11 = time.time()
-    df_ = get_allStock()
-    innerCode = df_[df_['code'] == code]['innercode'].tolist()[0]
-    if innerCode is None:
-        return None
+
+    if innercode is None:
+        try:
+            num = code[:1]
+            if num in ['5','1']:
+                df_= get_all_funds()
+            else:
+                df_ = get_allStockNew()
+            doc = df_[df_['TradingCode'] == code]['InnerCode'].tolist()
+            if len(doc) == 0:
+                return pd.DataFrame()
+            else:
+                innerCode = doc[0]
+        except:
+            return pd.DataFrame()
+    else:
+        innerCode = innercode
+
     url = "{}hq.niuguwang.com/aquote/quotedata/stocktransaction.ashx?code={}".format(pre, innerCode)
     # print(url)
     try:
@@ -1251,11 +1319,11 @@ def get_tick_raw(code=None):
             return pd.DataFrame()
 
 
-def get_tick(code=None):
+def get_tick(code=None,innercode=None):
     delay_times = 5
     i = 0
     while i < delay_times:
-        data = get_tick_raw(code=code)
+        data = get_tick_raw(code=code,innercode=innercode)
         if isinstance(data, pd.DataFrame):
             if not data.empty:
                 return data
@@ -1342,7 +1410,7 @@ def get_allOnlyStock():
         'password': MYSQL_PASSWORD,
     }
     try:
-        sql = """select * from innerCodeMap where stocktype=1;"""
+        sql = """select id,innercode,code,name,market,boardname,stocktype,insert_time,update_time from innerCodeMap where stocktype=1;"""
         data = conn_mysql_select(sql, sql_info)
         if data:
             df_data = pd.DataFrame(data)
@@ -1566,13 +1634,20 @@ def fixing_fund_data(data=None,code=None,is_start_end=None,start=None,end=None):
 def get_fund_data_raw(code=None, innercode=None, freq=None, adj=None, start=None, end=None, bars=None):
     type = get_type_from_freq(freq)
     ex = get_ex_from_adj(adj)
+
     if innercode is None:
-        df_ = get_all_funds()
         try:
-            innercode_ = df_[df_['TradingCode'] == int(code.split('.')[0])]['InnerCode'].tolist()[0]
+            num = code[:1]
+            if num in ['5','1']:
+                df_= get_all_funds()
+            else:
+                df_ = get_allStockNew()
+            doc = df_[df_['TradingCode'] == code]['InnerCode'].tolist()
+            if len(doc) == 0:
+                return pd.DataFrame()
+            else:
+                innercode_ = doc[0]
         except:
-            return pd.DataFrame()
-        if innercode_ is None:
             return pd.DataFrame()
     else:
         innercode_ = innercode
@@ -1580,19 +1655,19 @@ def get_fund_data_raw(code=None, innercode=None, freq=None, adj=None, start=None
     url = ''
     is_start_end = False
     if bars and not start and not end:
-        url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&count={}&ex={}" \
+        url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&count={}&ex={}&std=1" \
             .format(pre, innercode_, type, bars, ex)
     if bars and not start and end:
         end_ = str(str2datetime(end) + datetime.timedelta(days=1))
         end__ = end_.replace('-', '').replace(':', '').replace(' ', '')
-        url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&count={}&start={}&ex={}" \
+        url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&count={}&start={}&ex={}&std=1" \
             .format(pre, innercode_, type, bars, end__, ex)
     if not bars and start and end:
         is_start_end = True
         end_ = str(str2datetime(end) + datetime.timedelta(days=1))
         end__ = end_.replace('-', '').replace(':', '').replace(' ', '')
         bars_ = get_date_length(start, end)
-        url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&count={}&start={}&ex={}" \
+        url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&count={}&start={}&ex={}&std=1" \
             .format(pre, innercode_, type, bars_, end__, ex)
     # print(url)
     try:
@@ -1605,7 +1680,14 @@ def get_fund_data_raw(code=None, innercode=None, freq=None, adj=None, start=None
         response_json = json.loads(response.content.decode())
         if response_json:
             data = response_json['timedata']
-            return fixing_fund_data(data,code,is_start_end,start,end)
+            try:
+                data_ = fixing_fund_data(data,code,is_start_end,start,end)
+                return data_
+            except:
+                print(url)
+                print(response_json)
+                print(traceback.format_exc())
+                return pd.DataFrame()
         else:
             return pd.DataFrame()
 
@@ -1619,18 +1701,27 @@ def get_fund_data(code=None, innercode=None, freq=None, adj=None, start=None, en
             if not data.empty:
                 return data
         i += 1
-        time.sleep(0.01)
+        time.sleep(0.5)
         continue
     return pd.DataFrame()
 
 
 # 获取基金深度信息
 def get_funds_depth_raw(code=None,innercode=None):
-    if not innercode:
-        df_ = get_all_funds()
-        innercode_ = df_[df_['TradingCode'] == code]['InnerCode'].tolist()[0]
-        if innercode_ is None:
-            return None
+    if innercode is None:
+        try:
+            num = code[:1]
+            if num in ['5','1']:
+                df_= get_all_funds()
+            else:
+                df_ = get_allStockNew()
+            doc = df_[df_['TradingCode'] == code]['InnerCode'].tolist()
+            if len(doc) == 0:
+                return pd.DataFrame()
+            else:
+                innercode_ = doc[0]
+        except:
+            return pd.DataFrame()
     else:
         innercode_ = innercode
 
@@ -1647,7 +1738,14 @@ def get_funds_depth_raw(code=None,innercode=None):
         response_json = json.loads(response.content.decode())
         # print(time.time()-t)
         if response_json:
-            return fixing_funds_depth(response_json, code)
+            try:
+                data = fixing_funds_depth(response_json, code)
+                return data
+            except:
+                print(url)
+                print(response_json)
+                print(traceback.format_exc())
+                return None
         else:
             return None
 
@@ -1661,7 +1759,7 @@ def get_funds_depth(code=None,innercode=None):
             return data
 
         i += 1
-        time.sleep(0.01)
+        time.sleep(0.5)
         continue
 
 
@@ -1959,7 +2057,9 @@ def get_north_top10(start_date=None, end_date=None):
     try:
         # sql = """select StockCode,Rank,ShortName,Buy,Sale,BuyAndSale,BuyAddSale,TypeVal,SourceVal,Date
         # from top10_trading_stocks where Date>='{}' and Date<='{}' order by Date;""".format(start_date,end_date)
-        sql = """select *
+        # sql = """select *
+        # from top10_trading_stocks where TypeVal in (1,2) and Date>='{}' and Date<='{}' order by Date;""".format(start_date, end_date)
+        sql = """select Id,Rank,StockCode,ShortName,Buy,Sale,BuyAndSale,BuyAddSale,TypeVal,SourceVal,Date 
         from top10_trading_stocks where TypeVal in (1,2) and Date>='{}' and Date<='{}' order by Date;""".format(start_date, end_date)
         # print(sql)
         data = conn_mysql_select(sql, sql_info)
@@ -2400,7 +2500,76 @@ def get_spot_price(spotCode=None,start=None,end=None):
         time.sleep(0.01)
         continue
 
+def get_spot_price_by_variety_raw(code=None,start=None,end=None):
+    
+    try:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6",
+            "Content-Type": "application/json"}  
+        url = "https://hq.inquant.cn/arbitrage/Quant/GetHisSpots?startTime={}&endTime={}&varietyCode={}"\
+            .format(start.strftime("%Y%m%d"),end.strftime("%Y%m%d"),code)
+        # print(url)
+        response = requests.get(url, headers=headers)
+        response.close()
+    except Exception:
+        print(traceback.format_exc())
+        return None
+    else:
+        response = response.content.decode()
+        response_json = json.loads(response)
+        # print(response_json)
+        data = response_json.get('data')
+        df_data = pd.DataFrame(data)
+        return df_data
 
+
+def get_spot_price_by_variety(code=None,start=None,end=None):
+    delay_times = 5
+    i = 0
+    while i < delay_times:
+        data = get_spot_price_by_variety_raw(code=code,start=start,end=end)
+        if isinstance(data, pd.DataFrame):
+            if not data.empty:
+                return data
+        i += 1
+        time.sleep(0.01)
+        continue
+
+
+def get_member_rank_raw(code=None,start=None,end=None,rank_by=0):
+    
+    try:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6",
+            "Content-Type": "application/json"}  
+        url = "https://hq.inquant.cn/info/PositionData/GetMemberRank?varietyCode={}&start={}&end={}&rankBy={}"\
+            .format(code,start.strftime("%Y%m%d"),end.strftime("%Y%m%d"),rank_by)
+        # print(url)
+        response = requests.get(url, headers=headers)
+        response.close()
+    except Exception:
+        print(traceback.format_exc())
+        return None
+    else:
+        response = response.content.decode()
+        response_json = json.loads(response)
+        # print(response_json)
+        data = response_json.get('data')
+        df_data = pd.DataFrame(data)
+        return df_data
+
+
+def get_member_rank(code=None,start=None,end=None,rank_by=0):
+    delay_times = 5
+    i = 0
+    while i < delay_times:
+        data = get_member_rank_raw(code=code,start=start,end=end,rank_by=rank_by)
+        if isinstance(data, pd.DataFrame):
+            if not data.empty:
+                return data
+        i += 1
+        time.sleep(0.01)
+        continue
 
 
 def get_all_spot_raw():
@@ -2595,7 +2764,7 @@ def get_contract_openTime_raw(start=None,end=None):
             "User-Agent": "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6",
             "Content-Type": "application/json"}
         url = "https://apigateway.inquantstudio.com/api/BasicData/GetOpenTimes"
-        print(url)
+        # print(url)
         response = requests.post(url, data=json.dumps(body), headers=headers)
         response.close()
     except Exception:
@@ -3224,6 +3393,19 @@ def get_OPF_Bouns(code=None):
 if __name__ == '__main__':
     import time
     from pprint import pprint
+    import datetime
+
+    
+    # data = get_spot_price_by_variety('rb', datetime.datetime(2021,5,21), datetime.datetime(2021,6,21))
+    # print(data)
+    #
+    # contract = get_contract_detail('rb2110','SHFE')
+    # print(contract)
+    #
+    # ranks = get_member_rank('rb', datetime.datetime(2021,5,21), datetime.datetime(2021,6,21),0)
+    # print(ranks)
+
+
 
     # start_ = time.time()
     #
@@ -3454,8 +3636,8 @@ if __name__ == '__main__':
     # data = get_PlateInfo(type=1)
     # print(data)
 
-    data = get_depth(code='000001.SZ')
-    print(data)
+    # data = get_depth(code='000001.SZ')
+    # print(data)
 
 
 

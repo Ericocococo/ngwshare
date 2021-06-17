@@ -39,17 +39,19 @@ def get_date_min_length(start_str, end_str, freq):
     length = str2datetime(start_str) - str2datetime(end_str)
     length = abs(length.days)+1
     if freq in ['1m','1Min','1min','1Minute','1minute']:
-        return length * 240
+        return length * (240+1)
     if freq in ['5m','5Min','5min','5Minute','5minute']:
-        return length * 48
+        return length * (48+2)
     elif freq in ['15m','15Min','15min','15Minute','15minute']:
-        return length * 16
+        return length * (16+2)
     elif freq in ['30m','30Min','30min','30Minute','30minute']:
-        return length * 8
+        return length * (8+2)
     elif freq in ['60m','60Min','60min','60Minute','60minute']:
-        return length * 4
+        return length * (4+1)
     else:
         return length * 240
+
+
 
 def is_trading_day(date):
     china_holidays_2020 = [

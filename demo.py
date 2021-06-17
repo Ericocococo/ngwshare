@@ -9,7 +9,7 @@ pd.set_option('display.max_rows',500)
 pd.set_option('display.max_columns',500)
 pd.set_option('display.width',1000)
 
-
+t1 = time.time()
 
 
 
@@ -310,8 +310,68 @@ pd.set_option('display.width',1000)
 #
 # price = ng.get_price(codes=['000001.SZ', '600000.SH', '000028.SZ', "000858.SZ", "600722.SH", "000895.SZ", "600006.SH"])
 # print(price)
-#
-#
+
+
+
+# body = {
+#     'stock_list': ['002340.SZ'],
+#     'start': '2021-03-18',
+#     'end': '2021-04-30',
+#     'field_list':
+#         [
+#             'bigBuyOrder_open',
+#             'bigSaleOrder_open',  # 净额/amount
+#             'bigActiveSaleOrder_close',
+#             'Amount',
+#         ]
+# }
+# df_L2 = ng.getFactor(body=body)
+# print(df_L2)
+
+
+# body = {
+#     'stock_list': ['002340.SZ'],
+#     'start': '2020-03-18',
+#     'end': '2021-06-10',
+#     'field_list':
+#         [
+#             'LogSize',
+#             'Vol_DailyStd',
+#             'MidSize',
+#             'MLev',
+#             'IndustryZX'
+#         ]
+# }
+# data = ng.getRiskFactor(body=body)
+# print(data)
+
+# data = ng.getRiskFactorColumns()
+# print(data)
+
+
+
+# for i in range(50):
+#     ss = '2021-04-21'
+#     ee = '2021-05-06'
+#     ddd = ng.get_north_jg(ss,ee)
+#     # print(ddd)
+#     print(len(ddd))
+#     if len(ddd) == 1:
+#         print(ddd)
+#     time.sleep(1)
+
+
+
+
+
+
+
+# data = ng.get_free_value(['002615.SZ','000001.SZ'], "2015-03-09", "2015-03-14")
+# print(data)
+
+
+
+
 # print(time.time()-t1)
 
 
@@ -347,13 +407,29 @@ pd.set_option('display.width',1000)
 # data = ng.get_stock_data(code='000590.SZ', freq='d', adj='qfq', bars=2)
 # print(data)
 
+
+# df = ng.get_allStock()
+# print(df)
+# a = df[df['code']=='600519.SH']
+# print(a)
+
+
+# df = ng.get_allStock()
+# print(df)
+# print(time.time()-t1)
 #
-# df = ng.get_allStock()
+# df = ng.get_allStockNew()
 # print(df)
+# print(time.time()-t1)
+
+# data = ng.getRZRQStock(start='2021-06-14', end='2021-06-15', stock_list=['000001.SZ', '600016.SH', '300383.SZ'])
+# print(data)
 
 
-# df = ng.get_allStock()
-# print(df)
+
+# data = ng.get_free_value(['002615.SZ','000001.SZ'], "2021-06-02", "2021-06-15")
+# print(data)
+
 
 
 # t11 = time.time()
@@ -498,8 +574,10 @@ pd.set_option('display.width',1000)
 # print(h_raw)
 # h_raw = ng.get_stock_data(code='000001.SZ', innercode=1, freq='60m', adj='qfq', bars=300)
 # print(h_raw)
-h_raw = ng.get_stock_data(code='000001.SZ', innercode=1, freq='1m', adj='qfq', bars=500)
-print(h_raw)
+# h_raw = ng.get_stock_data(code='000001.SZ', innercode=1, freq='1m', adj='qfq', bars=10)
+# print(h_raw)
+# h_raw = ng.get_stock_data(code='000001.SZ', innercode=1, freq='1m', adj='qfq', end='2019-01-05',bars=20)
+# print(h_raw)
 
 
 # data = ng.get_stock_data(code='000029.SZ', freq='d', adj='qfq', end='2020-08-05',bars=300)
@@ -774,7 +852,7 @@ print(h_raw)
 
 
 
-# data = ng.get_allStockData(adj='qfq',date='2020-10-23')
+# data = ng.get_allStockData(adj='qfq',date='2021-06-04')
 # print(data)
 
 
@@ -798,15 +876,53 @@ print(h_raw)
 # import ngwshare as ng
 
 # # 获取全部基金
-# a = ng.get_all_funds()
+# data = ng.get_all_funds()
+# print(data)
+# a = data.loc[data['TradingCode'] == '515050.SH']
+# print(a)
+
+# a = ng.get_allStockNew()
 # print(a)
 #
+
 # a = ng.get_fund_data(code='510300.SH', innercode=5236, freq='d', adj='qfq', bars=20)
 # print(a)
-# # a = ng.get_fund_data(code='510300.SH', innercode=5236, freq='d', adj='qfq', end='2020-11-30', bars=20)
-# # print(a)
-# # a = ng.get_fund_data(code='510300.SH', innercode=5236, freq='d', adj='qfq', start='2020-11-02', end='2020-11-30')
-# # print(a)
+#
+# data = ng.get_north_jg("2020-08-17", "2020-08-19")
+# print(data)
+
+
+# t1 = time.time()
+# body = {
+#     "table": 'LC_SecuChange',
+#     "field_list": ['InnerCode', 'SecurityAbbr', 'InfoPublDate',
+#                    'IfPassed', 'ChangeDate', 'ChangeReason'],
+# }
+# STInfo = ng.get_fromTable(body)
+# print(STInfo)
+#
+# print(time.time()-t1)
+
+
+
+# body = {
+#         "table": 'LC_SecuChange',
+#         "field_list": ['InnerCode', 'SecurityAbbr', 'InfoPublDate', 'IfPassed', 'ChangeDate','ChangeReason'],
+#         "alterField": 'InfoPublDate',
+#         "startDate": '2010-01-01 00:00:00',
+#         "endDate": '2022-01-01 00:00:00'
+# }
+# data = ng.get_fromDate(body)
+# print(data)
+
+
+
+
+
+# a = ng.get_fund_data(code='510300.SH', innercode=5236, freq='d', adj='qfq', end='2020-11-30', bars=20)
+# print(a)
+# a = ng.get_fund_data(code='510300.SH', innercode=5236, freq='1m', adj='qfq', start='2020-11-02', end='2020-11-30')
+# print(a)
 #
 # # a = ng.get_fund_data(code='510300.SH', freq='d', adj='qfq', bars=20)
 # # print(a)
@@ -819,12 +935,20 @@ print(h_raw)
 
 
 
-t1 = time.time()
+
+
+
+# h = ng.get_stock_data(code="000001.SZ", innercode=1,  freq='1m', end = "2020-09-01" ,bars=250)
+# print(h)
+
+
 
 # a = ng.get_funds_depth(code='510300.SH')
 # print(a)
-
-# a = ng.get_funds_depth(code='510300.SH',innercode=5236)
+#
+# a = ng.get_funds_depth(code='159949.SZ')
+# print(a)
+# a = ng.get_funds_depth(code='510050.SH')
 # print(a)
 
 
@@ -834,8 +958,15 @@ t1 = time.time()
 # mail_flag = ng.send_mail(to_mail, mail_header, mail_content)
 # print(mail_flag)
 
-# h_last = ng.get_price(['000300.SH'])
+
+
+# h_last = ng.get_price(['000002.SZ','000001.SZ','300616.SZ','510800.SH','511880.SH'])
 # print(h_last)
+
+# data = ng.get_hxl2()
+# print(data)
+
+
 
 # data = ng.get_stock_data(code='000001.SZ', freq='1m', adj='qfq', bars=3)
 # print(data)
@@ -843,10 +974,13 @@ t1 = time.time()
 # print(data)
 
 
+# a = ng.get_price(codes=)
+#
 
 
-# # data = ng.get_allStock()
-# # print(data)
+# data = ng.get_allStock()
+# print(data)
+# print(data[:20])
 
 # data = ng.get_all_funds()
 # print(data)
@@ -861,11 +995,11 @@ t1 = time.time()
 
 # a = ng.get_funds_depth(code='150270.SZ',innercode=7548)
 # print(a)
-#
+
 # a = data.loc[data['TradingCode'] == '150270.SZ']
 # print(a)
 
-#
+
 # # code = '511880.SH'
 # code = '510300.SH'
 # a = data.loc[data['TradingCode'] == code]['InnerCode'].tolist()[0]
@@ -903,6 +1037,8 @@ t1 = time.time()
 
 # data = ng.get_allStock()
 # print(data)
+# a = data[data['code']=='002594.SZ']
+# print(a)
 
 
 
@@ -930,16 +1066,48 @@ t1 = time.time()
 
 # ng.get_plate_data_inner()
 #
+# h  = ng.get_stock_data(code='000001.SZ', freq='1m', adj='qfq', start='2021-05-06', end='2021-05-06')
+# print(h)
+
+
+# h = ng.get_stock_data(code='000010.SH', innercode=2324,adj='qfq', freq='1m',bars=1500)
+# print(h)
+# h = ng.get_stock_data(code='000010.SH', innercode=2324,adj='qfq', freq='1m', end = "2020-09-04" ,bars=1500)
+# print(h)
 #
-#
+# h = ng.get_stock_data(code='000010.SH', innercode=2324,adj='qfq', freq='1m', start='2020-08-01',end = "2020-09-04")
+# print(h)
+
+
+
 # bm_data = ng.get_stock_data(code='000016.SH', freq='d', adj='qfq', end='2020-10-23', bars=2)
 # print(bm_data)
 # print(bm_data['close'].tolist()[-1])
 # bm_value = round(float(bm_data.iloc[-1]['close']), 4)
 # print(bm_value)
-#
+
 # bm_value = ng.get_k_data(code='000016.SH', freq='d', start='2020-10-23', end='2020-10-23').close.values[-1]
 # print(bm_value)
+
+
+# h = ng.get_stock_data(code='002705.SZ', innercode=1212,  freq='1m', end = "2019-01-02" ,bars=1000)
+# print(h)
+
+
+
+# import tushare as ts
+# tok = "5e8c8dc53d0b3a660989d14fc4b998cd865a27c9fe2e805246bfd9b3"
+# pro = ts.pro_api(token=tok)
+#
+# df = ts.pro_bar(ts_code='000001.SZ', freq='D',adj='qfq', start_date='2018-01-01 09:00:00', end_date='2018-10-11 15:00:00')
+# print(df)
+
+
+
+# data = ng.get_allStockData(adj='qfq',date='2021-05-10')
+# print(data)
+
+
 
 
 
@@ -950,8 +1118,8 @@ t1 = time.time()
 # print(data)
 
 
-a = ng.return_last_trading_day()
-print(a)
+# a = ng.return_last_trading_day()
+# print(a)
 
 
 # a = ng.get_allStockData(adj='qfq', date='2020-01-07')
@@ -983,7 +1151,7 @@ print(a)
 # print(stock_close_df)
 
 
-print(time.time()-t1)
+
 
 
 # t_date = '2021-02-03'
@@ -1040,3 +1208,4 @@ print(time.time()-t1)
 # print(data)
 
 
+print(time.time()-t1)
