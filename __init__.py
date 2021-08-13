@@ -7,7 +7,7 @@ import requests
 import datetime
 import pandas as pd
 import numpy as np
-from ngwshare.conn_db.conn_sqlserver import conn_sqlserver_select,conn_sqlserver_insert
+from ngwshare.conn_db.conn_sqlserver import conn_sqlserver_select, conn_sqlserver_insert
 from ngwshare.conn_db.conn_mysql import conn_mysql_select
 from ngwshare.utils.freq_util import freq_dict
 from ngwshare.utils.date_util import str2datetime, get_date_length, is_trading_day, get_date_min_length
@@ -44,6 +44,9 @@ from ngwshare.data.factor import *
 from ngwshare.data.HaXin import *
 from ngwshare.data.BXdata import *
 from ngwshare.data.ZRZQ import *
+from ngwshare.data.NGWTick import *
+from ngwshare.data.T0Trade import *
+from ngwshare.data.FactorNew import *
 
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
@@ -62,8 +65,8 @@ import hashlib
 import base64
 import urllib.parse
 import warnings
-warnings.filterwarnings("ignore")
 
+warnings.filterwarnings("ignore")
 
 
 def send_mail_raw(to_addr=None, header=None, content=None):
@@ -75,7 +78,7 @@ def send_mail_raw(to_addr=None, header=None, content=None):
     # token = 'jrhflcppohwsbjfj'
 
     r_num = random.randint(1, 2)
-    from_dict = {1:['969282488@qq.com','kpofdicliftibfcc'],2:['296348304@qq.com','jrhflcppohwsbjfj']}
+    from_dict = {1: ['969282488@qq.com', 'kpofdicliftibfcc'], 2: ['296348304@qq.com', 'jrhflcppohwsbjfj']}
     from_addr = from_dict[r_num][0]
     token = from_dict[r_num][1]
 
@@ -118,16 +121,16 @@ def send_mail(to_addr=None, header=None, content=None):
     return False
 
 
-def sent_dingding_raw(content=None,mobile=None,is_all=None):
+def sent_dingding_raw(content=None, mobile=None, is_all=None):
     # body = {
     #         "msgtype": "text",
     #         "text": {"content": content},
     #         "at": {"atMobiles": ["13087005272"],"isAtAll": True}
     # }
     body = {
-            "msgtype": "text",
-            "text": {"content": content},
-            "at": {"atMobiles": mobile,"isAtAll": is_all}
+        "msgtype": "text",
+        "text": {"content": content},
+        "at": {"atMobiles": mobile, "isAtAll": is_all}
     }
     timestamp = str(round(time.time() * 1000))
     # secret = 'SEC375f38f420fef0605b585e40990f34aee2191316a8a995ee66584990b1cbf2f0'
@@ -141,11 +144,11 @@ def sent_dingding_raw(content=None,mobile=None,is_all=None):
     # url = 'https://oapi.dingtalk.com/robot/send?access_token=8410e2c656a9b99c984896c7970bab3e860473995d3f9128938c3e5d82d63151' \
     #       '&timestamp={}&sign={}'.format(timestamp,sign)
     url = 'https://oapi.dingtalk.com/robot/send?access_token=20ecf2ff2422c67be8c72b937a7348fb0e64ffaaba7d83b577578a5c2f8a17c8' \
-          '&timestamp={}&sign={}'.format(timestamp,sign)
+          '&timestamp={}&sign={}'.format(timestamp, sign)
     try:
         headers = {"Content-Type": "application/json",
-                   'User-Agent':get_ua()}
-        response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
+                   'User-Agent': get_ua()}
+        response = requests.post(url, data=json.dumps(body), headers=headers).content.decode()
         response_json = json.loads(response)
         if response_json['errcode'] == 0:
             return True
@@ -155,12 +158,13 @@ def sent_dingding_raw(content=None,mobile=None,is_all=None):
         print(traceback.format_exc())
         return False
 
-def sent_dingding(content=None,mobile=None,is_all=None):
+
+def sent_dingding(content=None, mobile=None, is_all=None):
     delay_times = 10
     i = 0
     while i < delay_times:
         # print(i)
-        flag = sent_dingding_raw(content=content,mobile=mobile,is_all=is_all)
+        flag = sent_dingding_raw(content=content, mobile=mobile, is_all=is_all)
         if flag:
             return True
         i += 1
@@ -169,21 +173,16 @@ def sent_dingding(content=None,mobile=None,is_all=None):
     return False
 
 
-
-
-
-
-
-def sent_dingding_raw2(content=None,mobile=None,is_all=None):
+def sent_dingding_raw2(content=None, mobile=None, is_all=None):
     # body = {
     #         "msgtype": "text",
     #         "text": {"content": content},
     #         "at": {"atMobiles": ["13087005272"],"isAtAll": True}
     # }
     body = {
-            "msgtype": "text",
-            "text": {"content": content},
-            "at": {"atMobiles": mobile,"isAtAll": is_all}
+        "msgtype": "text",
+        "text": {"content": content},
+        "at": {"atMobiles": mobile, "isAtAll": is_all}
     }
     timestamp = str(round(time.time() * 1000))
     secret = 'SEC375f38f420fef0605b585e40990f34aee2191316a8a995ee66584990b1cbf2f0'
@@ -195,13 +194,13 @@ def sent_dingding_raw2(content=None,mobile=None,is_all=None):
     sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))
 
     url = 'https://oapi.dingtalk.com/robot/send?access_token=8410e2c656a9b99c984896c7970bab3e860473995d3f9128938c3e5d82d63151' \
-          '&timestamp={}&sign={}'.format(timestamp,sign)
+          '&timestamp={}&sign={}'.format(timestamp, sign)
     # url = 'https://oapi.dingtalk.com/robot/send?access_token=20ecf2ff2422c67be8c72b937a7348fb0e64ffaaba7d83b577578a5c2f8a17c8' \
     #       '&timestamp={}&sign={}'.format(timestamp,sign)
     try:
         headers = {"Content-Type": "application/json",
-                   'User-Agent':get_ua()}
-        response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
+                   'User-Agent': get_ua()}
+        response = requests.post(url, data=json.dumps(body), headers=headers).content.decode()
         response_json = json.loads(response)
         if response_json['errcode'] == 0:
             return True
@@ -211,12 +210,13 @@ def sent_dingding_raw2(content=None,mobile=None,is_all=None):
         print(traceback.format_exc())
         return False
 
-def sent_dingding2(content=None,mobile=None,is_all=None):
+
+def sent_dingding2(content=None, mobile=None, is_all=None):
     delay_times = 10
     i = 0
     while i < delay_times:
         # print(i)
-        flag = sent_dingding_raw2(content=content,mobile=mobile,is_all=is_all)
+        flag = sent_dingding_raw2(content=content, mobile=mobile, is_all=is_all)
         if flag:
             return True
         i += 1
@@ -232,7 +232,7 @@ def get_k_data(code=None, freq=None, start=None, end=None, bars=None):
         # print(start,end)
     try:
         headers = {'User-Agent': get_ua()}
-        url = "http://{}/api/dailyQuote?secuCodeMarket={}&startDate={}&endDate={}" \
+        url = "{}/dailyQuote?secuCodeMarket={}&startDate={}&endDate={}" \
             .format(host, code, start, end)
         # print(url)
         response = requests.get(url, headers=headers)
@@ -257,7 +257,7 @@ def get_k_data(code=None, freq=None, start=None, end=None, bars=None):
 def get_stock_basic(code=None):
     try:
         headers = {'User-Agent': get_ua()}
-        url = "http://{}/api/stockBasic?secuCodeMarket={}".format(host, code)
+        url = "{}/stockBasic?secuCodeMarket={}".format(host, code)
         response = requests.get(url, headers=headers)
         response.close()
     except Exception:
@@ -273,7 +273,7 @@ def get_stock_basic(code=None):
 def get_all_stock():
     try:  # http://192.168.8.104:3389/api/stockAll
         headers = {'User-Agent': get_ua()}
-        url = "http://{}/api/stockAll".format(host)
+        url = "{}/stockAll".format(host)
         # print(url)
         response = requests.get(url, headers=headers)
         response.close()
@@ -292,7 +292,7 @@ def get_all_stock():
 def get_performance(date):
     try:
         headers = {'User-Agent': get_ua()}
-        url = "http://{}/api/performance?date={}".format(host, date)
+        url = "{}/performance?date={}".format(host, date)
         response = requests.get(url, headers=headers)
         response.close()
     except Exception:
@@ -311,7 +311,7 @@ def get_performance(date):
 def get_dIndicesForValuation(date):
     try:
         headers = {'User-Agent': get_ua()}
-        url = "http://{}/api/dIndicesForValuation?date={}".format(host, date)
+        url = "{}/dIndicesForValuation?date={}".format(host, date)
         response = requests.get(url, headers=headers)
         response.close()
     except Exception:
@@ -329,7 +329,7 @@ def get_dIndicesForValuation(date):
 def get_c_RR_ResearchReport(name=None, start=None, end=None):
     try:
         headers = {'User-Agent': get_ua()}
-        url = "http://{}/api/c_RR_ResearchReport?name={}&startDate={}&endDate={}" \
+        url = "{}/c_RR_ResearchReport?name={}&startDate={}&endDate={}" \
             .format(host, name, start, end)
         response = requests.get(url, headers=headers)
         response.close()
@@ -347,7 +347,7 @@ def get_c_RR_ResearchReport(name=None, start=None, end=None):
 def get_specialTrade():
     try:
         headers = {'User-Agent': get_ua()}
-        url = "http://{}/api/specialTrade".format(host)
+        url = "{}/specialTrade".format(host)
         response = requests.get(url, headers=headers)
         response.close()
     except Exception:
@@ -368,7 +368,7 @@ def get_financialData(table, stock, filed_list, start, end):
     else:
         stock = str(tuple(stock)).replace(',', '')
     try:
-        url = "http://{}/api/financialData?table={}&code={}&field={}&startDate={}&endDate={}" \
+        url = "{}/financialData?table={}&code={}&field={}&startDate={}&endDate={}" \
             .format(host, table, stock, filed_list, start, end)
         headers = {"Content-Type": "application/json",
                    'User-Agent': get_ua()}
@@ -387,7 +387,7 @@ def get_financialData(table, stock, filed_list, start, end):
 
 def get_financialDataPro(table, alterFiled, filed_list, start, end):
     try:
-        url = "http://{}/api/newestFinaIndex?table={}&alterField={}&field={}&startDate={}&endDate={}" \
+        url = "{}/newestFinaIndex?table={}&alterField={}&field={}&startDate={}&endDate={}" \
             .format(host, table, alterFiled, filed_list, start, end)
         headers = {"Content-Type": "application/json",
                    'User-Agent': get_ua()}
@@ -404,72 +404,105 @@ def get_financialDataPro(table, alterFiled, filed_list, start, end):
             return None
 
 
-def get_fromCode(body=None):
+def get_fromCode_raw(body=None):
     try:
         headers = {"Content-Type": "application/json",
                    'User-Agent': get_ua()}
-        url = "http://{}/api/fromCode".format(host)
+        url = "{}/fromCode".format(host)
         response = requests.post(url, data=json.dumps(body), headers=headers)
         response.close()
     except Exception:
         print(traceback.format_exc())
     else:
-        response_json = json.loads(response.content.decode())
-        # print(response_json)
-        if response_json.get("resultCode") == 0:
-            if response_json.get('data'):
-                df_data = pd.DataFrame(response_json['data'])
-                columns_list = []
-                field_list = body.get('field_list')
-                if field_list:
-                    columns_list = ['code', 'name']
-                    columns_list.extend(field_list)
-                df_data.columns = columns_list
-                # 区分sz,sh
-                if 'code_list' in body.keys():
-                    df_data = df_data[df_data.code.isin(body['code_list'])]
-                return df_data
+        try:
+            response_json = json.loads(response.content.decode())
+            # print(response_json)
+            if response_json.get("resultCode") == 0:
+                if response_json.get('data'):
+                    df_data = pd.DataFrame(response_json['data'])
+                    columns_list = []
+                    field_list = body.get('field_list')
+                    if field_list:
+                        columns_list = ['code', 'name']
+                        columns_list.extend(field_list)
+                    df_data.columns = columns_list
+                    # 区分sz,sh
+                    if 'code_list' in body.keys():
+                        df_data = df_data[df_data.code.isin(body['code_list'])]
+                    return df_data
+                else:
+                    return pd.DataFrame()
             else:
-                return 'no data exist.'
-        else:
-            return 'select error.'
+                return pd.DataFrame()
+        except:
+            return pd.DataFrame()
 
+def get_fromCode(body=None):
+    delay_times = 10
+    i = 0
+    while i < delay_times:
+        data = get_fromCode_raw(body=body)
+        if isinstance(data, pd.DataFrame):
+            if not data.empty:
+                return data
+        i += 1
+        time.sleep(5)
+        print(i,end=' ')
+        continue
+    return pd.DataFrame()
+
+
+def get_fromCompany_raw(body=None):
+    try:
+        headers = {"Content-Type": "application/json",
+                   'User-Agent': get_ua()}
+        url = "{}/fromCompany".format(host)
+        response = requests.post(url, data=json.dumps(body), headers=headers)
+        response.close()
+    except Exception:
+        print(traceback.format_exc())
+    else:
+        try:
+            response_json = json.loads(response.content.decode())
+            # print(response_json)
+            if response_json.get("resultCode") == 0:
+                if response_json.get('data'):
+                    df_data = pd.DataFrame(response_json['data'])
+                    columns_list = []
+                    field_list = body.get('field_list')
+                    if field_list:
+                        columns_list = ['code', 'name']
+                        columns_list.extend(field_list)
+                    df_data.columns = columns_list
+                    if 'code_list' in body.keys():
+                        df_data = df_data[df_data.code.isin(body['code_list'])]
+                    return df_data
+                else:
+                    return pd.DataFrame()
+            else:
+                return pd.DataFrame()
+        except:
+            return pd.DataFrame()
 
 def get_fromCompany(body=None):
+    delay_times = 10
+    i = 0
+    while i < delay_times:
+        data = get_fromCompany_raw(body=body)
+        if isinstance(data, pd.DataFrame):
+            if not data.empty:
+                return data
+        i += 1
+        time.sleep(5)
+        print(i,end=' ')
+        continue
+    return pd.DataFrame()
+
+def get_fromDate_raw(body=None):
     try:
         headers = {"Content-Type": "application/json",
                    'User-Agent': get_ua()}
-        url = "http://{}/api/fromCompany".format(host)
-        response = requests.post(url, data=json.dumps(body), headers=headers)
-        response.close()
-    except Exception:
-        print(traceback.format_exc())
-    else:
-        response_json = json.loads(response.content.decode())
-        # print(response_json)
-        if response_json.get("resultCode") == 0:
-            if response_json.get('data'):
-                df_data = pd.DataFrame(response_json['data'])
-                columns_list = []
-                field_list = body.get('field_list')
-                if field_list:
-                    columns_list = ['code', 'name']
-                    columns_list.extend(field_list)
-                df_data.columns = columns_list
-                if 'code_list' in body.keys():
-                    df_data = df_data[df_data.code.isin(body['code_list'])]
-                return df_data
-            else:
-                return 'no data exist.'
-        else:
-            return 'select error.'
-
-
-def get_fromDate(body=None):
-    try:
-        headers = {"Content-Type": "application/json",
-                   'User-Agent': get_ua()}
-        url = "http://{}/api/fromDate".format(host)
+        url = "{}/fromDate".format(host)
         # print(url)
         # print(body)
         response = requests.post(url, data=json.dumps(body), headers=headers)
@@ -477,122 +510,194 @@ def get_fromDate(body=None):
     except Exception:
         print(traceback.format_exc())
     else:
-        response_json = json.loads(response.content.decode())
-        # print(response_json)
-        if response_json["resultCode"] == 0:
-            if response_json.get('data'):
-                df_data = pd.DataFrame(response_json['data'])
-                columns_list = []
-                field_list = body.get('field_list')
-                if field_list:
-                    columns_list.extend(field_list)
-                df_data.columns = columns_list
-                return df_data
+        try:
+            response_json = json.loads(response.content.decode())
+            # print(response_json)
+            if response_json["resultCode"] == 0:
+                if response_json.get('data'):
+                    df_data = pd.DataFrame(response_json['data'])
+                    columns_list = []
+                    field_list = body.get('field_list')
+                    if field_list:
+                        columns_list.extend(field_list)
+                    df_data.columns = columns_list
+                    return df_data
+                else:
+                    return pd.DataFrame()
             else:
-                return 'no data exist.'
-        else:
-            return 'select error.'
+                return pd.DataFrame()
+        except:
+            return pd.DataFrame()
+
+
+def get_fromDate(body=None):
+    delay_times = 10
+    i = 0
+    while i < delay_times:
+        data = get_fromDate_raw(body=body)
+        if isinstance(data, pd.DataFrame):
+            if not data.empty:
+                return data
+        i += 1
+        time.sleep(5)
+        print(i, end=' ')
+        continue
+    return pd.DataFrame()
+
+
+def get_fromDateName_raw(body=None):
+    try:
+        headers = {"Content-Type": "application/json",
+                   'User-Agent': get_ua()}
+        url = "{}/fromDateName".format(host)
+        response = requests.post(url, data=json.dumps(body), headers=headers)
+        response.close()
+    except Exception:
+        print(traceback.format_exc())
+    else:
+        try:
+            response_json = json.loads(response.content.decode())
+            # print(response_json)
+            if response_json["resultCode"] == 0:
+                if response_json.get('data'):
+                    df_data = pd.DataFrame(response_json['data'])
+                    columns_list = []
+                    field_list = body.get('field_list')
+                    if field_list:
+                        columns_list.extend(field_list)
+                    df_data.columns = columns_list
+                    return df_data
+                else:
+                    return pd.DataFrame()
+            else:
+                return pd.DataFrame()
+        except:
+            return pd.DataFrame()
 
 
 def get_fromDateName(body=None):
+    delay_times = 10
+    i = 0
+    while i < delay_times:
+        data = get_fromDateName_raw(body=body)
+        if isinstance(data, pd.DataFrame):
+            if not data.empty:
+                return data
+        i += 1
+        time.sleep(5)
+        print(i,end=' ')
+        continue
+    return pd.DataFrame()
+
+
+def get_fromTable_raw(body=None):
     try:
         headers = {"Content-Type": "application/json",
                    'User-Agent': get_ua()}
-        url = "http://{}/api/fromDateName".format(host)
+        url = "{}/fromTable".format(host)
         response = requests.post(url, data=json.dumps(body), headers=headers)
         response.close()
     except Exception:
         print(traceback.format_exc())
     else:
-        response_json = json.loads(response.content.decode())
-        # print(response_json)
-        if response_json["resultCode"] == 0:
-            if response_json.get('data'):
-                df_data = pd.DataFrame(response_json['data'])
-                columns_list = []
-                field_list = body.get('field_list')
-                if field_list:
-                    columns_list.extend(field_list)
-                df_data.columns = columns_list
-                return df_data
+        try:
+            response_json = json.loads(response.content.decode())
+            # print(response_json)
+            if response_json["resultCode"] == 0:
+                if response_json.get('data'):
+                    df_data = pd.DataFrame(response_json['data'])
+                    columns_list = []
+                    field_list = body.get('field_list')
+                    if field_list:
+                        columns_list.extend(field_list)
+                    df_data.columns = columns_list
+                    return df_data
+                else:
+                    return pd.DataFrame()
             else:
-                return 'no data exist.'
-        else:
-            return 'select error.'
+                return pd.DataFrame()
+        except:
+            return pd.DataFrame()
 
 
 def get_fromTable(body=None):
+    delay_times = 10
+    i = 0
+    while i < delay_times:
+        data = get_fromTable_raw(body=body)
+        if isinstance(data, pd.DataFrame):
+            if not data.empty:
+                return data
+        i += 1
+        time.sleep(5)
+        print(i,end=' ')
+        continue
+    return pd.DataFrame()
+
+
+def get_fromName_raw(body=None):
     try:
         headers = {"Content-Type": "application/json",
                    'User-Agent': get_ua()}
-        url = "http://{}/api/fromTable".format(host)
+        url = "{}/fromName".format(host)
         response = requests.post(url, data=json.dumps(body), headers=headers)
         response.close()
     except Exception:
         print(traceback.format_exc())
     else:
-        response_json = json.loads(response.content.decode())
-        # print(response_json)
-        if response_json["resultCode"] == 0:
-            if response_json.get('data'):
-                df_data = pd.DataFrame(response_json['data'])
-                columns_list = []
-                field_list = body.get('field_list')
-                if field_list:
-                    columns_list.extend(field_list)
-                df_data.columns = columns_list
-                return df_data
+        try:
+            response_json = json.loads(response.content.decode())
+            # print(response_json)
+            if response_json["resultCode"] == 0:
+                if response_json.get('data'):
+                    df_data = pd.DataFrame(response_json['data'])
+                    columns_list = []
+                    field_list = body.get('field_list')
+                    if field_list:
+                        columns_list.extend(field_list)
+                    df_data.columns = columns_list
+                    return df_data
+                else:
+                    return pd.DataFrame()
             else:
-                return 'no data exist.'
-        else:
-            return 'select error.'
+                return pd.DataFrame()
+        except:
+            return pd.DataFrame()
 
 
 def get_fromName(body=None):
-    try:
-        headers = {"Content-Type": "application/json",
-                   'User-Agent': get_ua()}
-        url = "http://{}/api/fromName".format(host)
-        response = requests.post(url, data=json.dumps(body), headers=headers)
-        response.close()
-    except Exception:
-        print(traceback.format_exc())
-    else:
-        response_json = json.loads(response.content.decode())
-        # print(response_json)
-        if response_json["resultCode"] == 0:
-            if response_json.get('data'):
-                df_data = pd.DataFrame(response_json['data'])
-                columns_list = []
-                field_list = body.get('field_list')
-                if field_list:
-                    columns_list.extend(field_list)
-                df_data.columns = columns_list
-                return df_data
-            else:
-                return 'no data exist.'
-        else:
-            return 'select error.'
+    delay_times = 10
+    i = 0
+    while i < delay_times:
+        data = get_fromName_raw(body=body)
+        if isinstance(data, pd.DataFrame):
+            if not data.empty:
+                return data
+        i += 1
+        time.sleep(5)
+        print(i,end=' ')
+        continue
+    return pd.DataFrame()
 
 
 # -------------------------------------------------------------------------------------
 
 def get_type_from_freq(freq):
-    if freq in ['1m','1Min','1min','1Minute','1minute']:
+    if freq in ['1m', '1Min', '1min', '1Minute', '1minute']:
         return 11
-    if freq in ['5m','5Min','5min','5Minute','5minute']:
+    if freq in ['5m', '5Min', '5min', '5Minute', '5minute']:
         return 1
-    if freq in ['15m','15Min','15min','15Minute','15minute']:
+    if freq in ['15m', '15Min', '15min', '15Minute', '15minute']:
         return 2
-    if freq in ['30m','30Min','30min','30Minute','30minute']:
+    if freq in ['30m', '30Min', '30min', '30Minute', '30minute']:
         return 3
-    if freq in ['60m','60Min','60min','60Minute','60minute']:
+    if freq in ['60m', '60Min', '60min', '60Minute', '60minute']:
         return 4
     if freq in ['d', 'day', 'DAY', 'Day', '1d']:
         return 5
-    if freq in ['w','week','1w','1week','1W','1Week']:
+    if freq in ['w', 'week', '1w', '1week', '1W', '1Week']:
         return 6
-    if freq in ['mon','month','1mon','1Month']:
+    if freq in ['mon', 'month', '1mon', '1Month']:
         return 9
 
 
@@ -684,8 +789,7 @@ def fixing_k_data_mm(data):
     return df_data_
 
 
-
-def fixing_stock_min_data(data,code,start,end,bars,freq):
+def fixing_stock_min_data(data, code, start, end, bars, freq):
     freq_list = freq_dict.get(freq)
     df_data = pd.DataFrame(data)
     data_dict = {}
@@ -697,7 +801,7 @@ def fixing_stock_min_data(data,code,start,end,bars,freq):
     data_dict['close'] = [round(float(i) / 100, 4) for i in df_data['nowv']]
     data_dict['preclose'] = [round(float(i) / 100, 4) for i in df_data['preclose']]
     data_dict['volume'] = [int(i) for i in df_data['curvol']]
-    data_dict['value'] =  [int(i) for i in df_data['curvalue']]
+    data_dict['value'] = [int(i) for i in df_data['curvalue']]
     df_data_ = pd.DataFrame(data_dict)
     if (not start) and (not end) and bars:
         df_data_['new_date'] = df_data_['date'].apply(lambda x: str(x)[11:19])
@@ -739,8 +843,6 @@ def fixing_stock_min_data(data,code,start,end,bars,freq):
             return df_data_n
 
 
-
-
 def get_stock_data_raw(code=None, innercode=None, freq=None, adj=None, start=None, end=None, bars=None):
     """
     :param code: 证券代码
@@ -764,11 +866,14 @@ def get_stock_data_raw(code=None, innercode=None, freq=None, adj=None, start=Non
     if innercode is None:
         try:
             num = code[:1]
-            if num in ['5','1']:
-                df_= get_all_funds()
+            if num in ['5', '1']:
+                df_ = get_all_funds()
             else:
-                df_ = get_allStockNew()
-            doc = df_[df_['TradingCode'] == code]['InnerCode'].tolist()
+                df_ = get_allStock()
+            doc = df_[df_['code'] == code]['innercode'].tolist()
+            # else:
+            #     df_ = get_allStockNew()
+            # doc = df_[df_['TradingCode'] == code]['InnerCode'].tolist()
             if len(doc) == 0:
                 return pd.DataFrame()
             else:
@@ -838,11 +943,14 @@ def get_stock_data_raw_m(code=None, innercode=None, freq=None, adj=None, start=N
     if innercode is None:
         try:
             num = code[:1]
-            if num in ['5','1']:
-                df_= get_all_funds()
+            if num in ['5', '1']:
+                df_ = get_all_funds()
             else:
-                df_ = get_allStockNew()
-            doc = df_[df_['TradingCode'] == code]['InnerCode'].tolist()
+                df_ = get_allStock()
+            doc = df_[df_['code'] == code]['innercode'].tolist()
+            # else:
+            #     df_ = get_allStockNew()
+            # doc = df_[df_['TradingCode'] == code]['InnerCode'].tolist()
             if len(doc) == 0:
                 return pd.DataFrame()
             else:
@@ -881,11 +989,14 @@ def get_stock_data_min_raw(code=None, innercode=None, freq=None, adj=None, start
     if innercode is None:
         try:
             num = code[:1]
-            if num in ['5','1']:
-                df_= get_all_funds()
+            if num in ['5', '1']:
+                df_ = get_all_funds()
             else:
-                df_ = get_allStockNew()
-            doc = df_[df_['TradingCode'] == code]['InnerCode'].tolist()
+                df_ = get_allStock()
+            doc = df_[df_['code'] == code]['innercode'].tolist()
+            # else:
+            #     df_ = get_allStockNew()
+            # doc = df_[df_['TradingCode'] == code]['InnerCode'].tolist()
             if len(doc) == 0:
                 return pd.DataFrame()
             else:
@@ -901,12 +1012,16 @@ def get_stock_data_min_raw(code=None, innercode=None, freq=None, adj=None, start
     if (not start) and (not end) and bars:
         count = bars
         if ex:
-            url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&count={}&ex={}&std=1".format(pre, innerCode, type, count, ex)
+            url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&count={}&ex={}&std=1".format(pre,
+                                                                                                           innerCode,
+                                                                                                           type, count,
+                                                                                                           ex)
         else:
-            url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&count={}&std=1".format(pre, innerCode, type, count)
+            url = "{}hq.niuguwang.com/aquote/quote/kline.ashx?code={}&type={}&count={}&std=1".format(pre, innerCode,
+                                                                                                     type, count)
     else:
         if bars:
-            count = bars+100
+            count = bars + 100
             if freq in ['1m', '1Min', '1min', '1Minute', '1minute']:
                 end_ = str(str2datetime(end) + datetime.timedelta(minutes=1))
             elif freq in ['5m', '5Min', '5min', '5Minute', '5minute']:
@@ -946,7 +1061,7 @@ def get_stock_data_min_raw(code=None, innercode=None, freq=None, adj=None, start
             if response_json:
                 data = response_json['timedata']
                 if data:
-                    df_data = fixing_stock_min_data(data,code,start,end,bars,freq)
+                    df_data = fixing_stock_min_data(data, code, start, end, bars, freq)
                     return df_data
                 else:
                     # print('休市.')
@@ -957,18 +1072,20 @@ def get_stock_data_min_raw(code=None, innercode=None, freq=None, adj=None, start
             return pd.DataFrame()
 
 
-
 def get_stock_data(code=None, freq=None, adj=None, start=None, end=None, bars=None, innercode=None):
     delay_times = 5
     i = 0
     while i < delay_times:
         # print(i,delay_times)
         data = pd.DataFrame()
-        if freq in ['d', 'day', 'DAY', 'Day', '1d', 'w', 'week', '1w', '1week', '1W', '1Week','mon', 'month', '1mon', '1Month' ]:
+        if freq in ['d', 'day', 'DAY', 'Day', '1d', 'w', 'week', '1w', '1week', '1W', '1Week', 'mon', 'month', '1mon',
+                    '1Month']:
             if (end and bars) or (start and end):
-                data = get_stock_data_raw(code=code, innercode=innercode, freq=freq, adj=adj, start=start, end=end,bars=bars)
+                data = get_stock_data_raw(code=code, innercode=innercode, freq=freq, adj=adj, start=start, end=end,
+                                          bars=bars)
             elif end is None and bars:
-                data = get_stock_data_raw_m(code=code, innercode=innercode, freq=freq, adj=adj, start=start, end=end,bars=bars)
+                data = get_stock_data_raw_m(code=code, innercode=innercode, freq=freq, adj=adj, start=start, end=end,
+                                            bars=bars)
             else:
                 return pd.DataFrame()
         elif freq in ['1m', '1Min', '1min', '1Minute', '1minute',
@@ -976,7 +1093,8 @@ def get_stock_data(code=None, freq=None, adj=None, start=None, end=None, bars=No
                       '15m', '15Min', '15min', '15Minute', '15minute',
                       '30m', '30Min', '30min', '30Minute', '30minute',
                       '60m', '60Min', '60min', '60Minute', '60minute']:
-            data = get_stock_data_min_raw(code=code, freq=freq, adj=adj, start=start, end=end, bars=bars,innercode=innercode)
+            data = get_stock_data_min_raw(code=code, freq=freq, adj=adj, start=start, end=end, bars=bars,
+                                          innercode=innercode)
         else:
             return data
 
@@ -1210,15 +1328,18 @@ def get_plate_data_inner(code=None, innercode=None, freq=None, adj=None, bars=No
 
 # -------------------------------------------------------------------------------------------
 # 获取深度信息
-def get_depth_raw(code=None,innercode=None):
+def get_depth_raw(code=None, innercode=None):
     if innercode is None:
         try:
             num = code[:1]
-            if num in ['5','1']:
-                df_= get_all_funds()
+            if num in ['5', '1']:
+                df_ = get_all_funds()
             else:
-                df_ = get_allStockNew()
-            doc = df_[df_['TradingCode'] == code]['InnerCode'].tolist()
+                df_ = get_allStock()
+            doc = df_[df_['code'] == code]['innercode'].tolist()
+            # else:
+            #     df_ = get_allStockNew()
+            # doc = df_[df_['TradingCode'] == code]['InnerCode'].tolist()
             if len(doc) == 0:
                 return pd.DataFrame()
             else:
@@ -1246,11 +1367,11 @@ def get_depth_raw(code=None,innercode=None):
             return None
 
 
-def get_depth(code=None,innercode=None):
+def get_depth(code=None, innercode=None):
     delay_times = 5
     i = 0
     while i < delay_times:
-        data = get_depth_raw(code=code,innercode=innercode)
+        data = get_depth_raw(code=code, innercode=innercode)
         if data:
             return data
 
@@ -1281,17 +1402,20 @@ def fixing_depth(data, code):
 
 
 # -------------------------------------------------------------------------------------------
-def get_tick_raw(code=None,innercode=None):
+def get_tick_raw(code=None, innercode=None):
     t11 = time.time()
 
     if innercode is None:
         try:
             num = code[:1]
-            if num in ['5','1']:
-                df_= get_all_funds()
+            if num in ['5', '1']:
+                df_ = get_all_funds()
             else:
-                df_ = get_allStockNew()
-            doc = df_[df_['TradingCode'] == code]['InnerCode'].tolist()
+                df_ = get_allStock()
+            doc = df_[df_['code'] == code]['innercode'].tolist()
+            # else:
+            #     df_ = get_allStockNew()
+            # doc = df_[df_['TradingCode'] == code]['InnerCode'].tolist()
             if len(doc) == 0:
                 return pd.DataFrame()
             else:
@@ -1300,7 +1424,7 @@ def get_tick_raw(code=None,innercode=None):
             return pd.DataFrame()
     else:
         innerCode = innercode
-
+    # print(innerCode)
     url = "{}hq.niuguwang.com/aquote/quotedata/stocktransaction.ashx?code={}".format(pre, innerCode)
     # print(url)
     try:
@@ -1319,11 +1443,11 @@ def get_tick_raw(code=None,innercode=None):
             return pd.DataFrame()
 
 
-def get_tick(code=None,innercode=None):
+def get_tick(code=None, innercode=None):
     delay_times = 5
     i = 0
     while i < delay_times:
-        data = get_tick_raw(code=code,innercode=innercode)
+        data = get_tick_raw(code=code, innercode=innercode)
         if isinstance(data, pd.DataFrame):
             if not data.empty:
                 return data
@@ -1594,8 +1718,7 @@ def get_all_funds():
             return None
 
 
-
-def fixing_fund_data(data=None,code=None,is_start_end=None,start=None,end=None):
+def fixing_fund_data(data=None, code=None, is_start_end=None, start=None, end=None):
     df_data = pd.DataFrame(data)
     df_data = df_data[['times', 'highp', 'openp', 'lowp', 'nowv', 'preclose', 'curvol', 'curvalue']]
     trading_day = [str(datetime.datetime.strptime(str(i), '%Y%m%d%H%M%S'))[:19] for i in df_data['times']]
@@ -1630,7 +1753,6 @@ def fixing_fund_data(data=None,code=None,is_start_end=None,start=None,end=None):
         return df_data_.sort_values(by='date')
 
 
-
 def get_fund_data_raw(code=None, innercode=None, freq=None, adj=None, start=None, end=None, bars=None):
     type = get_type_from_freq(freq)
     ex = get_ex_from_adj(adj)
@@ -1638,11 +1760,14 @@ def get_fund_data_raw(code=None, innercode=None, freq=None, adj=None, start=None
     if innercode is None:
         try:
             num = code[:1]
-            if num in ['5','1']:
-                df_= get_all_funds()
+            if num in ['5', '1']:
+                df_ = get_all_funds()
             else:
-                df_ = get_allStockNew()
-            doc = df_[df_['TradingCode'] == code]['InnerCode'].tolist()
+                df_ = get_allStock()
+            doc = df_[df_['code'] == code]['innercode'].tolist()
+            # else:
+            #     df_ = get_allStockNew()
+            # doc = df_[df_['TradingCode'] == code]['InnerCode'].tolist()
             if len(doc) == 0:
                 return pd.DataFrame()
             else:
@@ -1681,7 +1806,7 @@ def get_fund_data_raw(code=None, innercode=None, freq=None, adj=None, start=None
         if response_json:
             data = response_json['timedata']
             try:
-                data_ = fixing_fund_data(data,code,is_start_end,start,end)
+                data_ = fixing_fund_data(data, code, is_start_end, start, end)
                 return data_
             except:
                 print(url)
@@ -1707,15 +1832,18 @@ def get_fund_data(code=None, innercode=None, freq=None, adj=None, start=None, en
 
 
 # 获取基金深度信息
-def get_funds_depth_raw(code=None,innercode=None):
+def get_funds_depth_raw(code=None, innercode=None):
     if innercode is None:
         try:
             num = code[:1]
-            if num in ['5','1']:
-                df_= get_all_funds()
+            if num in ['5', '1']:
+                df_ = get_all_funds()
             else:
-                df_ = get_allStockNew()
-            doc = df_[df_['TradingCode'] == code]['InnerCode'].tolist()
+                df_ = get_allStock()
+            doc = df_[df_['code'] == code]['innercode'].tolist()
+            # else:
+            #     df_ = get_allStockNew()
+            # doc = df_[df_['TradingCode'] == code]['InnerCode'].tolist()
             if len(doc) == 0:
                 return pd.DataFrame()
             else:
@@ -1750,11 +1878,11 @@ def get_funds_depth_raw(code=None,innercode=None):
             return None
 
 
-def get_funds_depth(code=None,innercode=None):
+def get_funds_depth(code=None, innercode=None):
     delay_times = 5
     i = 0
     while i < delay_times:
-        data = get_funds_depth_raw(code=code,innercode=innercode)
+        data = get_funds_depth_raw(code=code, innercode=innercode)
         if data:
             return data
 
@@ -1820,7 +1948,6 @@ def get_allPlate():
             return df_data
         else:
             return None
-
 
 
 # ---------------------------------------------------------------------------------------------------------
@@ -2032,8 +2159,8 @@ def get_north_capital(start_date=None, end_date=None):
     start_date = str(start_date)[:10]
     end_date = str(end_date)[:10]
     try:
-        sql = """select Buy,Sale,BuyAndSale,BuyAndSaleAddUp,TypeVal,SourceVal,Date
-         from north_capital_history where Date>='{}' and Date<='{}' order by Date;""".format(start_date, end_date)
+        sql = """select Buy,Sale,BuyAndSale,BuyAndSaleAddUp,TypeVal,SourceVal,Date 
+        from north_capital_history where Date>='{}' and Date<='{}' order by Date;""".format(start_date, end_date)
         # print(sql)
         data = conn_mysql_select(sql, sql_info)
         if data:
@@ -2059,10 +2186,10 @@ def get_north_top10(start_date=None, end_date=None):
         # from top10_trading_stocks where Date>='{}' and Date<='{}' order by Date;""".format(start_date,end_date)
         # sql = """select *
         # from top10_trading_stocks where TypeVal in (1,2) and Date>='{}' and Date<='{}' order by Date;""".format(start_date, end_date)
-        sql = """select Id,Rank,StockCode,ShortName,Buy,Sale,BuyAndSale,BuyAddSale,TypeVal,SourceVal,Date 
-        from top10_trading_stocks where TypeVal in (1,2) and Date>='{}' and Date<='{}' order by Date;""".format(start_date, end_date)
+        sql = """select Id,`Rank`,StockCode,ShortName,Buy,Sale,BuyAndSale,BuyAddSale,TypeVal,SourceVal,Date from top10_trading_stocks where TypeVal in (1,2) and Date>='{}' and Date<='{}' order by Date;""".format(start_date, end_date)
         # print(sql)
         data = conn_mysql_select(sql, sql_info)
+        # print(data)
         if data:
             df_data = pd.DataFrame(data)
             df_data.columns = ['Id', 'Rank', 'StockCode', 'ShortName', 'Buy', 'Sale', 'BuyAndSale', 'BuyAddSale',
@@ -2124,6 +2251,7 @@ def freq2dataType(freq=None):
     else:
         return 60 * 60 * 24
 
+
 def exchange2num(exchange):
     if exchange is None:
         return 4
@@ -2144,27 +2272,40 @@ def exchange2num(exchange):
         return 15
 
 
-
 def get_hisBar_raw(symbol=None, exchange=None, freq=None, start=None, end=None, count=None):
     # body = {"symbol": "rb2010", "exchange": 4, "dataType": 60, "begin": "20201009", "end": "20201020"}
     exchange_ = exchange2num(exchange)
     dataType = freq2dataType(freq=freq)
 
     url = ''
-    body = {"symbol": symbol, "exchange": exchange_, "dataType": dataType, "dataSource":1}
+    body = {"symbol": symbol, "exchange": exchange_, "dataType": dataType, "dataSource": 1}
     if start and end and not count:
+        if start == end and dataType == 86400:
+            end_ = str(str2datetime(end) + datetime.timedelta(days=1))[:19]
+        else:
+            end_ = end
         begin = start.replace('-', '').replace(' ', '').replace(':', '')
-        end = end.replace('-', '').replace(' ', '').replace(':', '')
+        end__ = end_.replace('-', '').replace(' ', '').replace(':', '')
         body['begin'] = begin
-        body['end'] = end
+        body['end'] = end__
         url = "https://apigateway.inquantstudio.com/api/MarketData/GetHisBar"
     if not start and not end and count:
         body['count'] = count
         url = "https://apigateway.inquantstudio.com/api/MarketData/GetLastBar"
     if not start and end and count:
-        end = end.replace('-', '').replace(' ', '').replace(':', '')
-        body['end'] = end
-        body['count'] = count
+        end_ = end.replace('-', '').replace(' ', '').replace(':', '')
+        if len(end_) == 8:
+            end_ += '000000'
+
+        if dataType == 86400 and count == 1:
+            count_ = 1
+            # end_ = str(str2datetime(end) + datetime.timedelta(days=1))[:19]
+            end_ = end_.replace('-', '').replace(' ', '').replace(':', '')
+        else:
+            count_ = count
+
+        body['end'] = end_
+        body['count'] = count_
         url = "https://apigateway.inquantstudio.com/api/MarketData/GetPreviousBar"
     # print(body)
     # print(url)
@@ -2179,13 +2320,29 @@ def get_hisBar_raw(symbol=None, exchange=None, freq=None, start=None, end=None, 
         return None
     else:
         response = response.content.decode()
+        # print(response)
         response_json = json.loads(response)
         data = response_json.get('data')
+        # print(data)
         df_data = pd.DataFrame(data)
+        if df_data.empty:
+            return df_data
         df_data.columns = ['symbol', 'exchange', 'bar_type', 'time', 'pre_close', 'open', 'high', 'low', 'close',
                            'volume',
                            'turnover', 'open_interest', 'settlement']
-
+        if start and end and not count:
+            if start == end and dataType == 86400:
+                begin = start.replace('-', '').replace(' ', '').replace(':', '')
+                end = end.replace('-', '').replace(' ', '').replace(':', '')
+                if len(begin) == 8:
+                    begin += '000000'
+                if len(end) == 8:
+                    end += '000000'
+                # print(begin,end)
+                df_data = df_data[(df_data["time"] >= int(begin)) & (df_data["time"] <= int(end))]
+        if not start and end and count:
+            if dataType == 86400 and count == 1:
+                df_data = df_data[-1:]
         df_data_ = df_data.sort_values(by='time').reset_index(drop=True)
         return df_data_
 
@@ -2208,7 +2365,7 @@ def get_hisTick_raw(symbol=None, exchange=None, start=None, end=None, count=None
     exchange_ = exchange2num(exchange)
 
     url = ''
-    body = {"symbol": symbol, "exchange": exchange_, "dataSource":1}
+    body = {"symbol": symbol, "exchange": exchange_, "dataSource": 1}
     if start and end and not count:
         begin = start.replace('-', '').replace(' ', '').replace(':', '')
         end = end.replace('-', '').replace(' ', '').replace(':', '')
@@ -2243,8 +2400,8 @@ def get_hisTick_raw(symbol=None, exchange=None, start=None, end=None, count=None
         # print(df_data)
         df_data.columns = ['symbol', 'exchange', 'time',
                            'last', 'open', 'high', 'low', 'pre_close',
-                           'volume','turnover',
-                           'bid','ask','upper_limit','lower_limit',
+                           'volume', 'turnover',
+                           'bid', 'ask', 'upper_limit', 'lower_limit',
                            'open_interest', 'settlement']
         return df_data
 
@@ -2270,7 +2427,7 @@ def all_contract_price_raw(freq=None, time=None):
     if time:
         time_ = time.replace('-', '').replace(' ', '').replace(':', '')
         if freq == '1d':
-            time_ = time_[:8]+'000000'
+            time_ = time_[:8] + '000000'
         body['time'] = time_
     else:
         pass
@@ -2309,6 +2466,8 @@ def all_contract_price(freq=None, time=None):
         i += 1
         time.sleep(0.01)
         continue
+
+
 # ----------------------------------------------------------------------------------------------------------------------
 
 
@@ -2333,9 +2492,9 @@ def contract_depth_raw(symbol=None, exchange=None):
         response_json = json.loads(response)
         data = response_json.get('data')[0]
         # return data
-        bid = [[i['p'],i['v']] for i in data['bid']]
-        ask = [[i['p'],i['v']] for i in data['ask']]
-        c_depth = {'bid':bid,'ask':ask,'time':str(datetime.datetime.strptime(str(data['t']),'%Y%m%d%H%M%S'))}
+        bid = [[i['p'], i['v']] for i in data['bid']]
+        ask = [[i['p'], i['v']] for i in data['ask']]
+        c_depth = {'bid': bid, 'ask': ask, 'time': str(datetime.datetime.strptime(str(data['t']), '%Y%m%d%H%M%S'))}
         return c_depth
 
 
@@ -2352,13 +2511,14 @@ def contract_depth(symbol=None, exchange=None):
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-def contract_all_position_users_raw(code=None,start=None,end=None,sign=None):
+def contract_all_position_users_raw(code=None, start=None, end=None, sign=None):
     try:
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6",
             "Content-Type": "application/json"}
         # url = 'https://dev-riskadmin.inquant.cn/api/position/GetSymbolDetail?startTime={}&endTime={}&sign={}'.format(start,end,sign)
-        url = "https://riskadmin.inquant.cn/api/position/GetRiskContractByCode?startTime={}&endTime={}&code={}&sign={}".format(start,end,code,sign)
+        url = "https://riskadmin.inquant.cn/api/position/GetRiskContractByCode?startTime={}&endTime={}&code={}&sign={}".format(
+            start, end, code, sign)
         # print(url)
         response = requests.get(url, headers=headers)
         response.close()
@@ -2374,11 +2534,11 @@ def contract_all_position_users_raw(code=None,start=None,end=None,sign=None):
         return df_data
 
 
-def contract_all_position_users(code=None,start=None,end=None,sign=None):
+def contract_all_position_users(code=None, start=None, end=None, sign=None):
     delay_times = 5
     i = 0
     while i < delay_times:
-        data = contract_all_position_users_raw(code=code,start=start,end=end,sign=sign)
+        data = contract_all_position_users_raw(code=code, start=start, end=end, sign=sign)
         if isinstance(data, pd.DataFrame):
             if not data.empty:
                 return data
@@ -2426,13 +2586,15 @@ def contract_all_position_users(code=None,start=None,end=None,sign=None):
 #         continue
 
 
-def contract_position_users_raw(start=None,end=None,sign=None):
+def contract_position_users_raw(start=None, end=None, sign=None):
     try:
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6",
             "Content-Type": "application/json"}
         # url = 'https://dev-riskadmin.inquant.cn/api/position/GetSymbolDetail?startTime={}&endTime={}&sign={}'.format(start,end,sign)
-        url = "https://riskadmin.inquant.cn/api/position/GetSymbolDetail?startTime={}&endTime={}&sign={}".format(start,end,sign)
+        url = "https://riskadmin.inquant.cn/api/position/GetSymbolDetail?startTime={}&endTime={}&sign={}".format(start,
+                                                                                                                 end,
+                                                                                                                 sign)
         # print(url)
         response = requests.get(url, headers=headers)
         response.close()
@@ -2448,11 +2610,11 @@ def contract_position_users_raw(start=None,end=None,sign=None):
         return df_data
 
 
-def contract_position_users(start=None,end=None,sign=None):
+def contract_position_users(start=None, end=None, sign=None):
     delay_times = 5
     i = 0
     while i < delay_times:
-        data = contract_position_users_raw(start=start,end=end,sign=sign)
+        data = contract_position_users_raw(start=start, end=end, sign=sign)
         if isinstance(data, pd.DataFrame):
             if not data.empty:
                 return data
@@ -2461,18 +2623,17 @@ def contract_position_users(start=None,end=None,sign=None):
         continue
 
 
-
-def get_spot_price_raw(spotCode=None,start=None,end=None):
+def get_spot_price_raw(spotCode=None, start=None, end=None):
     m = hashlib.md5()
-    m.update('inquantSpotContract:{}{}{}'.format(spotCode,start,end).encode('utf-8'))
+    m.update('inquantSpotContract:{}{}{}'.format(spotCode, start, end).encode('utf-8'))
     sign = m.hexdigest().upper()
     # print(body)
     try:
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6",
             "Content-Type": "application/json"}
-        url = "https://hq.inquant.cn/newsfut/api/spotcontract/getspothisprice?startTime={}&endTime={}&spotCode={}&sign={}"\
-            .format(start,end,spotCode,sign)
+        url = "https://hq.inquant.cn/newsfut/api/spotcontract/getspothisprice?startTime={}&endTime={}&spotCode={}&sign={}" \
+            .format(start, end, spotCode, sign)
         # print(url)
         response = requests.get(url, headers=headers)
         response.close()
@@ -2488,46 +2649,11 @@ def get_spot_price_raw(spotCode=None,start=None,end=None):
         return df_data
 
 
-def get_spot_price(spotCode=None,start=None,end=None):
+def get_spot_price(spotCode=None, start=None, end=None):
     delay_times = 5
     i = 0
     while i < delay_times:
-        data = get_spot_price_raw(spotCode=spotCode,start=start,end=end)
-        if isinstance(data, pd.DataFrame):
-            if not data.empty:
-                return data
-        i += 1
-        time.sleep(0.01)
-        continue
-
-def get_spot_price_by_variety_raw(code=None,start=None,end=None):
-    
-    try:
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6",
-            "Content-Type": "application/json"}  
-        url = "https://hq.inquant.cn/arbitrage/Quant/GetHisSpots?startTime={}&endTime={}&varietyCode={}"\
-            .format(start.strftime("%Y%m%d"),end.strftime("%Y%m%d"),code)
-        # print(url)
-        response = requests.get(url, headers=headers)
-        response.close()
-    except Exception:
-        print(traceback.format_exc())
-        return None
-    else:
-        response = response.content.decode()
-        response_json = json.loads(response)
-        # print(response_json)
-        data = response_json.get('data')
-        df_data = pd.DataFrame(data)
-        return df_data
-
-
-def get_spot_price_by_variety(code=None,start=None,end=None):
-    delay_times = 5
-    i = 0
-    while i < delay_times:
-        data = get_spot_price_by_variety_raw(code=code,start=start,end=end)
+        data = get_spot_price_raw(spotCode=spotCode, start=start, end=end)
         if isinstance(data, pd.DataFrame):
             if not data.empty:
                 return data
@@ -2536,14 +2662,13 @@ def get_spot_price_by_variety(code=None,start=None,end=None):
         continue
 
 
-def get_member_rank_raw(code=None,start=None,end=None,rank_by=0):
-    
+def get_spot_price_by_variety_raw(code=None, start=None, end=None):
     try:
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6",
-            "Content-Type": "application/json"}  
-        url = "https://hq.inquant.cn/info/PositionData/GetMemberRank?varietyCode={}&start={}&end={}&rankBy={}"\
-            .format(code,start.strftime("%Y%m%d"),end.strftime("%Y%m%d"),rank_by)
+            "Content-Type": "application/json"}
+        url = "https://hq.inquant.cn/arbitrage/Quant/GetHisSpots?startTime={}&endTime={}&varietyCode={}" \
+            .format(start.strftime("%Y%m%d"), end.strftime("%Y%m%d"), code)
         # print(url)
         response = requests.get(url, headers=headers)
         response.close()
@@ -2559,11 +2684,46 @@ def get_member_rank_raw(code=None,start=None,end=None,rank_by=0):
         return df_data
 
 
-def get_member_rank(code=None,start=None,end=None,rank_by=0):
+def get_spot_price_by_variety(code=None, start=None, end=None):
     delay_times = 5
     i = 0
     while i < delay_times:
-        data = get_member_rank_raw(code=code,start=start,end=end,rank_by=rank_by)
+        data = get_spot_price_by_variety_raw(code=code, start=start, end=end)
+        if isinstance(data, pd.DataFrame):
+            if not data.empty:
+                return data
+        i += 1
+        time.sleep(0.01)
+        continue
+
+
+def get_member_rank_raw(code=None, start=None, end=None, rank_by=0):
+    try:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6",
+            "Content-Type": "application/json"}
+        url = "https://hq.inquant.cn/info/PositionData/GetMemberRank?varietyCode={}&start={}&end={}&rankBy={}" \
+            .format(code, start.strftime("%Y%m%d"), end.strftime("%Y%m%d"), rank_by)
+        # print(url)
+        response = requests.get(url, headers=headers)
+        response.close()
+    except Exception:
+        print(traceback.format_exc())
+        return None
+    else:
+        response = response.content.decode()
+        response_json = json.loads(response)
+        # print(response_json)
+        data = response_json.get('data')
+        df_data = pd.DataFrame(data)
+        return df_data
+
+
+def get_member_rank(code=None, start=None, end=None, rank_by=0):
+    delay_times = 5
+    i = 0
+    while i < delay_times:
+        data = get_member_rank_raw(code=code, start=start, end=end, rank_by=rank_by)
         if isinstance(data, pd.DataFrame):
             if not data.empty:
                 return data
@@ -2605,6 +2765,7 @@ def get_all_spot():
         time.sleep(0.01)
         continue
 
+
 # -----------------------------------------------------------------------------------------------------
 # 获取所有合约
 def get_all_contract_raw():
@@ -2638,6 +2799,7 @@ def get_all_contract():
         i += 1
         time.sleep(0.01)
         continue
+
 
 # -----------------------------------------------------------------------------------------------------
 # 获取所有合约分类
@@ -2675,13 +2837,13 @@ def get_contract_varieties(type=None):
         continue
 
 
-def get_TradeVolumeRanking_raw(vid=None,start=None,end=None):
+def get_TradeVolumeRanking_raw(vid=None, start=None, end=None):
     try:
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6",
             "Content-Type": "application/json"}
-        url = "https://hq.inquant.cn/info/positiondata/GetTradeVolumeRankingByVid?vid={}&startTime={}&endTime={}"\
-            .format(vid,start,end)
+        url = "https://hq.inquant.cn/info/positiondata/GetTradeVolumeRankingByVid?vid={}&startTime={}&endTime={}" \
+            .format(vid, start, end)
         # print(url)
         response = requests.get(url, headers=headers)
         response.close()
@@ -2697,18 +2859,17 @@ def get_TradeVolumeRanking_raw(vid=None,start=None,end=None):
         return df_data
 
 
-def get_TradeVolumeRanking(vid=None,start=None,end=None):
+def get_TradeVolumeRanking(vid=None, start=None, end=None):
     delay_times = 5
     i = 0
     while i < delay_times:
-        data = get_TradeVolumeRanking_raw(vid=vid,start=start,end=end)
+        data = get_TradeVolumeRanking_raw(vid=vid, start=start, end=end)
         if isinstance(data, pd.DataFrame):
             if not data.empty:
                 return data
         i += 1
         time.sleep(0.01)
         continue
-
 
 
 # -----------------------------------------------------------------------------------------------------
@@ -2738,7 +2899,7 @@ def get_contract_detail_raw(symbol=None, exchange=None):
         return data
 
 
-def get_contract_detail(symbol=None,exchange=None):
+def get_contract_detail(symbol=None, exchange=None):
     delay_times = 5
     i = 0
     while i < delay_times:
@@ -2750,12 +2911,10 @@ def get_contract_detail(symbol=None,exchange=None):
         continue
 
 
-
-
 # 获取所有合约
-def get_contract_openTime_raw(start=None,end=None):
-    start_ = start.replace('-','') + '000000'
-    end_ = end.replace('-','') + '000000'
+def get_contract_openTime_raw(start=None, end=None):
+    start_ = start.replace('-', '') + '000000'
+    end_ = end.replace('-', '') + '000000'
     body = {"begin": start_, "end": end_}
     # print(body)
     print(json.dumps(body))
@@ -2778,18 +2937,17 @@ def get_contract_openTime_raw(start=None,end=None):
         return df_data
 
 
-def get_contract_openTime(start=None,end=None):
+def get_contract_openTime(start=None, end=None):
     delay_times = 5
     i = 0
     while i < delay_times:
-        data = get_contract_openTime_raw(start=start,end=end)
+        data = get_contract_openTime_raw(start=start, end=end)
         if isinstance(data, pd.DataFrame):
             if not data.empty:
                 return data
         i += 1
         time.sleep(0.01)
         continue
-
 
 
 # 获取单个合约
@@ -2825,10 +2983,10 @@ def get_main_contract(variety_code=None):
         time.sleep(0.01)
         continue
 
+
 # ----------------------------------------------------------------------------------------------------------------------
 
 # 获取期货手续费率
-
 
 
 # 获取乘数、保证金比率
@@ -2866,7 +3024,6 @@ def get_all_commission():
         continue
 
 
-
 # 获取乘数、保证金比率
 def get_all_margin_ratios_raw():
     try:
@@ -2902,7 +3059,6 @@ def get_all_margin_ratios():
         continue
 
 
-
 # 获取所有品种variety
 def get_all_varieties_raw():
     try:
@@ -2936,7 +3092,6 @@ def get_all_varieties():
         i += 1
         time.sleep(0.01)
         continue
-
 
 
 # ----------------------------------------------------------------------------------
@@ -2975,7 +3130,6 @@ def get_all_robots_info():
         continue
 
 
-
 # 获取 某个机器人信息
 def get_robot_info_raw(robotId=None):
     try:
@@ -3010,7 +3164,6 @@ def get_robot_info(robotId=None):
         continue
 
 
-
 # http://iqfairobotwebapi.taojin.svc.ingress.inquant/Trade/GetStgyAccountInfo?stgyAccountId=1
 # http://iqfairobotwebapi.taojin.svc.ingress.inquant/Trade/GetStgyAccountInfo?stgyAccountId=1
 # 获取 某个账户的机器人信息
@@ -3019,7 +3172,8 @@ def get_account_info(stgyAccountId=None):
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6",
             "Content-Type": "application/json"}
-        url = "http://iqfairobotwebapi.taojin.svc.ingress.inquant/Trade/GetStgAccontInfo?stgyAccountId={}".format(stgyAccountId)
+        url = "http://iqfairobotwebapi.taojin.svc.ingress.inquant/Trade/GetStgAccontInfo?stgyAccountId={}".format(
+            stgyAccountId)
         # url = "http://dev-taojinairobot.inquant.cn/Trade/GetStgyAccountInfo?stgyAccountId={}".format(stgyAccountId)
         # print(url)
         response = requests.get(url, headers=headers)
@@ -3032,8 +3186,8 @@ def get_account_info(stgyAccountId=None):
         response_json = json.loads(response)
         return response_json
 
-#
 
+#
 
 
 # 获取机器人上一天的equity
@@ -3057,10 +3211,8 @@ def get_RobotLastEquity(robotId=None):
         return response_json['data']
 
 
-
-
 # 获取 某个机器人持仓
-def get_robot_position(stgyAccount=None,symbol_exchange=None,posSide=None):
+def get_robot_position(stgyAccount=None, symbol_exchange=None, posSide=None):
     symbol = symbol_exchange.split('.')[0]
     exchange = symbol_exchange.split('.')[1]
     exchange_num = exchange2num(exchange)
@@ -3068,8 +3220,8 @@ def get_robot_position(stgyAccount=None,symbol_exchange=None,posSide=None):
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6",
             "Content-Type": "application/json"}
-        url = "http://iqfairobotwebapi.taojin.svc.ingress.inquant/Trade/GetPosition?stgyAccount={}&symbol={}&exchange={}&posSide={}"\
-            .format(stgyAccount, symbol,exchange, posSide)
+        url = "http://iqfairobotwebapi.taojin.svc.ingress.inquant/Trade/GetPosition?stgyAccount={}&symbol={}&exchange={}&posSide={}" \
+            .format(stgyAccount, symbol, exchange, posSide)
         # url = "http://dev-taojinairobot.inquant.cn/Trade/GetPosition?stgyAccount={}&symbol={}&exchange={}&posSide={}"\
         #     .format(stgyAccount, symbol,exchange_num, posSide)
         # url = "http://dev-taojinairobot.inquant.cn/AiRobot/GetAiRobotInfo?robotId={}".format(robotId)
@@ -3085,7 +3237,6 @@ def get_robot_position(stgyAccount=None,symbol_exchange=None,posSide=None):
         # print(response_json)
         # data = response_json.get('data')
         return response_json
-
 
 
 # 停止 某个机器人
@@ -3110,10 +3261,10 @@ def stop_robot(robotId=None):
 
 # ----------------------------------------------------------------------------------
 # 策略信号新增
-def SendStrategySignal(stgyId=None,symbol=None,exchange=None,side=None,quantity=None,price=None,
-                       orderType=None,note=None):
+def SendStrategySignal(stgyId=None, symbol=None, exchange=None, side=None, quantity=None, price=None,
+                       orderType=None, note=None):
     exchange_num = exchange2num(exchange)
-    side_offset = {'open_long':[66,1],'close_long':[66,2],'open_short':[83,1],'close_short':[83,2]}
+    side_offset = {'open_long': [66, 1], 'close_long': [66, 2], 'open_short': [83, 1], 'close_short': [83, 2]}
     side_, offset = side_offset[side]
     body = {
         "stgyId": stgyId,
@@ -3133,7 +3284,7 @@ def SendStrategySignal(stgyId=None,symbol=None,exchange=None,side=None,quantity=
         url = "http://iqfairobotwebapi.taojin.svc.ingress.inquant/Trade/SendStgySignal"
         # url = "http://dev-taojinairobot.inquant.cn/Trade/SendStgySignal"
         # print(url)
-        response = requests.post(url,data=json.dumps(body), headers=headers)
+        response = requests.post(url, data=json.dumps(body), headers=headers)
         response.close()
     except Exception:
         print(traceback.format_exc())
@@ -3144,14 +3295,14 @@ def SendStrategySignal(stgyId=None,symbol=None,exchange=None,side=None,quantity=
         return response_json
 
 
-
 # 获取策略订单信息(策略订单的状态)
 def OmsContract_GetOrderStatus(stgyOrderId=None):
     try:
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6",
             "Content-Type": "application/json"}
-        url = "http://iqfairobotwebapi.taojin.svc.ingress.inquant/Trade/QryStgyOrderStatus?stgyOrderId={}".format(stgyOrderId)
+        url = "http://iqfairobotwebapi.taojin.svc.ingress.inquant/Trade/QryStgyOrderStatus?stgyOrderId={}".format(
+            stgyOrderId)
         # url = "http://dev-taojinairobot.inquant.cn/Trade/QryStgyOrderStatus?stgyOrderId={}".format(stgyOrderId)
         # print(url)
         response = requests.get(url, headers=headers)
@@ -3166,7 +3317,8 @@ def OmsContract_GetOrderStatus(stgyOrderId=None):
 
 
 # 下单
-def OmsContract_CreateOrder(stgyAccountId=None,stgySignalId=None,symbol_exchange=None,side=None,quantity=None,is_today=None):
+def OmsContract_CreateOrder(stgyAccountId=None, stgySignalId=None, symbol_exchange=None, side=None, quantity=None,
+                            is_today=None):
     symbol = symbol_exchange.split('.')[0]
     exchange = symbol_exchange.split('.')[1]
     exchange_num = exchange2num(exchange)
@@ -3179,7 +3331,7 @@ def OmsContract_CreateOrder(stgyAccountId=None,stgySignalId=None,symbol_exchange
     # 平昨 2
     else:
         if exchange_num == 4:
-            side_offset = {'open_long':[66,1],'close_long':[83,2],'open_short':[83,1],'close_short':[66,2]}
+            side_offset = {'open_long': [66, 1], 'close_long': [83, 2], 'open_short': [83, 1], 'close_short': [66, 2]}
         else:
             side_offset = {'open_long': [66, 1], 'close_long': [83, 2], 'open_short': [83, 1], 'close_short': [66, 2]}
     side_, offset = side_offset[side]
@@ -3201,7 +3353,7 @@ def OmsContract_CreateOrder(stgyAccountId=None,stgySignalId=None,symbol_exchange
         url = "http://iqfairobotwebapi.taojin.svc.ingress.inquant/Trade/SendOrder"
         # url = "http://dev-taojinairobot.inquant.cn/Trade/SendOrder"
         # print(url)
-        response = requests.post(url,data=json.dumps(body), headers=headers)
+        response = requests.post(url, data=json.dumps(body), headers=headers)
         response.close()
     except Exception:
         print(traceback.format_exc())
@@ -3212,9 +3364,8 @@ def OmsContract_CreateOrder(stgyAccountId=None,stgySignalId=None,symbol_exchange
         return response_json
 
 
-
 # 撤单
-def OmsContract_CancelOrder(stgyOrderId=None,stgyAccountId=None):
+def OmsContract_CancelOrder(stgyOrderId=None, stgyAccountId=None):
     body = {
         "stgyOrderId": stgyOrderId,
         "stgyAccountId": stgyAccountId
@@ -3226,7 +3377,7 @@ def OmsContract_CancelOrder(stgyOrderId=None,stgyAccountId=None):
         url = "http://iqfairobotwebapi.taojin.svc.ingress.inquant/Trade/CancelOrder"
         # url = "http://dev-taojinairobot.inquant.cn/Trade/CancelOrder"
         # print(url)
-        response = requests.post(url,data=json.dumps(body), headers=headers)
+        response = requests.post(url, data=json.dumps(body), headers=headers)
         response.close()
     except Exception:
         print(traceback.format_exc())
@@ -3237,28 +3388,13 @@ def OmsContract_CancelOrder(stgyOrderId=None,stgyAccountId=None):
         return response_json
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # -----------------------------------------------------------------------------------------------
 def get_AllOTCFundsInfo():
     # url = "http://127.0.0.1:5007/funds/info"
     url = "https://stq.niuguwang.com/funds/info"
     try:
         headers = {"Content-Type": "application/json",
-                   'User-Agent':get_ua()}
+                   'User-Agent': get_ua()}
         response = requests.get(url, headers=headers).content.decode()
         response_json = json.loads(response)
         if not response_json['data']:
@@ -3267,7 +3403,8 @@ def get_AllOTCFundsInfo():
     except Exception:
         print(traceback.format_exc())
 
-def get_OTCFundsValues(code=None,start=None,end=None):
+
+def get_OTCFundsValues(code=None, start=None, end=None):
     # url = 'https://shqf.niuguwang.com/fquote/OPF/nopfquotedata.ashx?code={}&ntype=2'.format(innercode)
     # # print(url)
     # try:
@@ -3284,17 +3421,18 @@ def get_OTCFundsValues(code=None,start=None,end=None):
     # except Exception:
     #     print(traceback.format_exc())
 
-    url = 'https://stq.niuguwang.com/funds/values?code={}&start={}&end={}'.format(code,start,end)
+    url = 'https://stq.niuguwang.com/funds/values?code={}&start={}&end={}'.format(code, start, end)
     # print(url)
     try:
         headers = {"Content-Type": "application/json",
-                   'User-Agent':get_ua()}
+                   'User-Agent': get_ua()}
         response = requests.get(url, headers=headers).content.decode()
         response_json = json.loads(response)
         data_dict = response_json.get('data')
         if data_dict:
             df_data = pd.DataFrame(response_json['data'])
-            return df_data[['Date','FundCode','PerNetValue','TotalNetValue','RiseRate','ShenGouStatus','ShuHuiStatus']]
+            return df_data[
+                ['Date', 'FundCode', 'PerNetValue', 'TotalNetValue', 'RiseRate', 'ShenGouStatus', 'ShuHuiStatus']]
         else:
             return pd.DataFrame()
     except Exception:
@@ -3306,7 +3444,7 @@ def get_OTCFundsInfo(innercode=None):
     # print(url)
     try:
         headers = {"Content-Type": "application/json",
-                   'User-Agent':get_ua()}
+                   'User-Agent': get_ua()}
         response = requests.get(url, headers=headers).content.decode()
         response_json = json.loads(response)
         data_dict = response_json.get('timedata')
@@ -3319,13 +3457,12 @@ def get_OTCFundsInfo(innercode=None):
         print(traceback.format_exc())
 
 
-
 def get_OPF_PORTFOLIO(code=None):
     url = 'https://stq.niuguwang.com/funds/portfolio?code={}'.format(code)
     # print(url)
     try:
         headers = {"Content-Type": "application/json",
-                   'User-Agent':get_ua()}
+                   'User-Agent': get_ua()}
         response = requests.get(url, headers=headers).content.decode()
         response_json = json.loads(response)
         if not response_json['data']:
@@ -3334,7 +3471,6 @@ def get_OPF_PORTFOLIO(code=None):
         return df_data
     except Exception:
         print(traceback.format_exc())
-
 
 
 def get_OPF_AssetConfig(code=None):
@@ -3342,7 +3478,7 @@ def get_OPF_AssetConfig(code=None):
     # print(url)
     try:
         headers = {"Content-Type": "application/json",
-                   'User-Agent':get_ua()}
+                   'User-Agent': get_ua()}
         response = requests.get(url, headers=headers).content.decode()
         response_json = json.loads(response)
         if not response_json['data']:
@@ -3351,7 +3487,6 @@ def get_OPF_AssetConfig(code=None):
         return df_data
     except Exception:
         print(traceback.format_exc())
-
 
 
 def get_OPF_AssetConfig_Exe(code=None):
@@ -3359,7 +3494,7 @@ def get_OPF_AssetConfig_Exe(code=None):
     # print(url)
     try:
         headers = {"Content-Type": "application/json",
-                   'User-Agent':get_ua()}
+                   'User-Agent': get_ua()}
         response = requests.get(url, headers=headers).content.decode()
         response_json = json.loads(response)
         if not response_json['data']:
@@ -3369,25 +3504,25 @@ def get_OPF_AssetConfig_Exe(code=None):
     except Exception:
         print(traceback.format_exc())
 
+
 def get_OPF_Bouns(code=None):
     url = 'https://stq.niuguwang.com/funds/Bonus?code={}'.format(code)
     # print(url)
     try:
         headers = {"Content-Type": "application/json",
-                   'User-Agent':get_ua()}
+                   'User-Agent': get_ua()}
         response = requests.get(url, headers=headers).content.decode()
         response_json = json.loads(response)
         if not response_json['data']:
             return pd.DataFrame()
         df_data = pd.DataFrame(response_json['data'])
-        return df_data[['FundCode','DengJiDate','ChuXiDate','FaFangDate','Bonus','AddTime']]\
-            .sort_values(by=["ChuXiDate"],ascending=[False])
+        return df_data[['FundCode', 'DengJiDate', 'ChuXiDate', 'FaFangDate', 'Bonus', 'AddTime']] \
+            .sort_values(by=["ChuXiDate"], ascending=[False])
     except Exception:
         print(traceback.format_exc())
+
+
 # -----------------------------------------------------------------------------------------------
-
-
-
 
 
 if __name__ == '__main__':
@@ -3395,7 +3530,6 @@ if __name__ == '__main__':
     from pprint import pprint
     import datetime
 
-    
     # data = get_spot_price_by_variety('rb', datetime.datetime(2021,5,21), datetime.datetime(2021,6,21))
     # print(data)
     #
@@ -3404,8 +3538,6 @@ if __name__ == '__main__':
     #
     # ranks = get_member_rank('rb', datetime.datetime(2021,5,21), datetime.datetime(2021,6,21),0)
     # print(ranks)
-
-
 
     # start_ = time.time()
     #
@@ -3638,9 +3770,6 @@ if __name__ == '__main__':
 
     # data = get_depth(code='000001.SZ')
     # print(data)
-
-
-
 
     print(time.time() - t1)
 

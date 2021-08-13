@@ -5,13 +5,17 @@ import ngwshare as ng
 import pandas as pd
 
 
-def getTradingCalendar():
+def getTradingCalendar(start=None,end=None):
+    if not start:
+        start = '2018-01-01'
+    if not end:
+        end = '2023-01-01'
     body = {
         "table": 'QT_TradingDayNew',
         "field_list": ['TradingDate', 'IfTradingDay', 'SecuMarket'],
         "alterField": 'TradingDate',
-        "startDate": '2018-01-01',
-        "endDate": '2023-01-01'
+        "startDate": start,
+        "endDate": end
     }
     data = ng.get_fromDate(body)
     return data

@@ -13,6 +13,30 @@ pd.set_option('display.width',10000)
 # data = ng.get_hisBar(symbol='rb2011',exchange='SHFE',freq='1m',start='2020-09-01',end='2020-10-20')
 # print(data)
 
+data = ng.get_hisBar(symbol='IFM',exchange='CFFEX',freq='1m',start='2020-09-01',end='2020-10-20')
+print(data)
+
+
+# data = ng.get_hisBar(symbol="IFM",exchange='CFFEX',freq='1d',count=1,end="2021-07-09")
+# print(data)
+
+
+# data = ng.get_hisBar(symbol="IFM",exchange='CFFEX',freq='1d',count=1,end="2021-07-09")
+# print(data)
+# data = ng.get_hisBar(symbol="IFM",exchange='CFFEX',freq='1d',count=1,end="2021-07-08")
+# print(data)
+
+# data = ng.get_hisBar(symbol="IFM",exchange='CFFEX',freq='1d',start="2016-12-01",end="2017-06-01")
+# print(data)
+# data = ng.get_hisBar(symbol="IFM",exchange='CFFEX',freq='1d',start="2021-07-08",end="2021-07-08")
+# print(data)
+
+data = ng.get_hisBar(symbol="IFM",exchange='CFFEX',freq='1m',start='2016-12-01',end='2017-01-05')
+print(data)
+# data = ng.get_hisBar(symbol="IFM",exchange='CFFEX',freq='1m',start="2016-12-29",end="2016-12-30")
+# print(data)
+# data = ng.get_stock_data(code='000300.SH', innercode=2131,freq='1d',start="2016-12-01",end="2017-06-01")
+# print(data)
 
 
 # data = ng.get_hisBar(symbol='agM',exchange='SHFE',freq='1m',start='2021-03-26',end='2021-03-30')
@@ -187,12 +211,21 @@ pd.set_option('display.width',10000)
 # print(data)
 
 
+# # 获取主力合约
+# data = ng.get_main_contract(variety_code='IF')
+# print(data)
+# print(data['symbol'])
+# # 获取主力合约
+# data = ng.get_main_contract(variety_code='IH')
+# print(data)
+# print(data['symbol'])
 
 
 # # 获取主力合约
 # data = ng.get_main_contract(variety_code='v')
 # print(data)
 # print(data['symbol'])
+
 
 # # 获取历史主力合约
 # data=ng.get_HisMainContract(variety='v', start='2021-01-01', end='2021-06-09')
@@ -210,7 +243,7 @@ pd.set_option('display.width',10000)
 
 
 # # 获取一个时间段的 交易时间
-# data = ng.get_contract_openTime(start='2021-04-01',end='2021-04-20')
+# data = ng.get_contract_openTime(start='2021-04-01',end='2021-06-30')
 # print(data)
 # data['begin'] = [str(datetime.datetime.strptime(i, '%Y%m%d%H%M%S'))[:19] for i in data['begin'].tolist()]
 # data['end'] = [str(datetime.datetime.strptime(i, '%Y%m%d%H%M%S'))[:19] for i in data['end'].tolist()]
@@ -282,14 +315,14 @@ pd.set_option('display.width',10000)
 # print(time.time()-t1)
 
 
-data = ng.get_spot_price_by_variety('rb', datetime.datetime(2021, 5, 21), datetime.datetime(2021, 6, 21))
-print(data)
-
-contract = ng.get_contract_detail('rb2110', 'SHFE')
-print(contract)
-
-ranks = ng.get_member_rank('rb', datetime.datetime(2021, 5, 21), datetime.datetime(2021, 6, 21), 0)
-print(ranks)
+# data = ng.get_spot_price_by_variety('rb', datetime.datetime(2021, 5, 21), datetime.datetime(2021, 6, 21))
+# print(data)
+#
+# contract = ng.get_contract_detail('rb2110', 'SHFE')
+# print(contract)
+#
+# ranks = ng.get_member_rank('rb', datetime.datetime(2021, 5, 21), datetime.datetime(2021, 6, 21), 0)
+# print(ranks)
 
 
 

@@ -56,232 +56,232 @@ def getFactorColumns():
 
 
 
-def getRiskFactor(body=None):
-    url = 'https://stq.niuguwang.com/factor/getriskfactor'
-    try:
-        headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
-        response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
-        # print(response)
-        response_json = json.loads(response)
-        # print(response_json)
-        if response_json['resultCode'] == 0:
-            return pd.DataFrame(response_json['data'])
-        else:
-            return pd.DataFrame()
-    except Exception:
-        print(traceback.format_exc())
-
-def upsertRiskFactor(body=None):
-    url = 'https://stq.niuguwang.com/factor/addriskfactor'
-    try:
-        headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
-        response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
-        response_json = json.loads(response)
-        # print(response_json)
-        if response_json['resultCode'] == 0:
-            return response_json['data']
-        else:
-            return response_json['data']
-    except Exception:
-        print(traceback.format_exc())
-
-def getRiskFactorColumns():
-    url = 'https://stq.niuguwang.com/factor/GetRiskFactorColumns'
-    try:
-        headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
-        response = requests.get(url,headers=headers).content.decode()
-        response_json = json.loads(response)
-        # print(response_json)
-        if response_json['resultCode'] == 0:
-            return response_json['data']
-        else:
-            return response_json['data']
-    except Exception:
-        print(traceback.format_exc())
-
-
-
-
-def getStyleFactor(body=None):
-    url = 'https://stq.niuguwang.com/factor/getstylefactor'
-    try:
-        headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
-        response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
-        # print(response)
-        response_json = json.loads(response)
-        # print(response_json)
-        if response_json['resultCode'] == 0:
-            return pd.DataFrame(response_json['data'])
-        else:
-            return pd.DataFrame()
-    except Exception:
-        print(traceback.format_exc())
-
-def upsertStyleFactor(body=None):
-    url = 'https://stq.niuguwang.com/factor/addstylefactor'
-    try:
-        headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
-        response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
-        response_json = json.loads(response)
-        # print(response_json)
-        if response_json['resultCode'] == 0:
-            return response_json['data']
-        else:
-            return response_json['data']
-    except Exception:
-        print(traceback.format_exc())
-
-def getStyleFactorColumns():
-    url = 'https://stq.niuguwang.com/factor/GetStyleFactorColumns'
-    try:
-        headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
-        response = requests.get(url,headers=headers).content.decode()
-        response_json = json.loads(response)
-        # print(response_json)
-        if response_json['resultCode'] == 0:
-            return response_json['data']
-        else:
-            return response_json['data']
-    except Exception:
-        print(traceback.format_exc())
-
-
-
-
-def getCSResidual(body=None):
-    url = 'https://stq.niuguwang.com/factor/getcsresidual'
-    try:
-        headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
-        response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
-        # print(response)
-        response_json = json.loads(response)
-        # print(response_json)
-        if response_json['resultCode'] == 0:
-            return pd.DataFrame(response_json['data'])
-        else:
-            return pd.DataFrame()
-    except Exception:
-        print(traceback.format_exc())
-
-def getCSResidualColumns():
-    url = 'https://stq.niuguwang.com/factor/GetCSResidualColumns'
-    try:
-        headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
-        response = requests.get(url,headers=headers).content.decode()
-        response_json = json.loads(response)
-        # print(response_json)
-        if response_json['resultCode'] == 0:
-            return response_json['data']
-        else:
-            return response_json['data']
-    except Exception:
-        print(traceback.format_exc())
-
-def getCSFactorReturns(start=None,end=None):
-    body = {'start':str(start)[:10],'end':str(end)[:10]}
-    url = 'https://stq.niuguwang.com/factor/getcsfactorreturns'
-    try:
-        headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
-        response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
-        # print(response)
-        response_json = json.loads(response)
-        # print(response_json)
-        if response_json['resultCode'] == 0:
-            return pd.DataFrame(response_json['data'])
-        else:
-            return pd.DataFrame()
-    except Exception:
-        print(traceback.format_exc())
-
-def getCSR2(start=None,end=None):
-    body = {'start':str(start)[:10],'end':str(end)[:10]}
-    url = 'https://stq.niuguwang.com/factor/getcsr2'
-    try:
-        headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
-        response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
-        # print(response)
-        response_json = json.loads(response)
-        # print(response_json)
-        if response_json['resultCode'] == 0:
-            return pd.DataFrame(response_json['data'])
-        else:
-            return pd.DataFrame()
-    except Exception:
-        print(traceback.format_exc())
-
-def getCSTStats(start=None,end=None):
-    body = {'start':str(start)[:10],'end':str(end)[:10]}
-    url = 'https://stq.niuguwang.com/factor/getcststats'
-    try:
-        headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
-        response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
-        # print(response)
-        response_json = json.loads(response)
-        # print(response_json)
-        if response_json['resultCode'] == 0:
-            return pd.DataFrame(response_json['data'])
-        else:
-            return pd.DataFrame()
-    except Exception:
-        print(traceback.format_exc())
-
-
-
-def upsertCSResidual(body=None):
-    url = 'https://stq.niuguwang.com/factor/addcsresidual'
-    try:
-        headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
-        response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
-        response_json = json.loads(response)
-        # print(response_json)
-        if response_json['resultCode'] == 0:
-            return response_json['data']
-        else:
-            return response_json['data']
-    except Exception:
-        print(traceback.format_exc())
-
-def upsertCSFactorReturns(body=None):
-    url = 'https://stq.niuguwang.com/factor/addcsfactorreturns'
-    try:
-        headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
-        response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
-        response_json = json.loads(response)
-        # print(response_json)
-        if response_json['resultCode'] == 0:
-            return response_json['data']
-        else:
-            return response_json['data']
-    except Exception:
-        print(traceback.format_exc())
-
-def upsertCSR2(body=None):
-    url = 'https://stq.niuguwang.com/factor/addcsr2'
-    try:
-        headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
-        response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
-        response_json = json.loads(response)
-        # print(response_json)
-        if response_json['resultCode'] == 0:
-            return response_json['data']
-        else:
-            return response_json['data']
-    except Exception:
-        print(traceback.format_exc())
-
-def upsertCSTStats(body=None):
-    url = 'https://stq.niuguwang.com/factor/addcststats'
-    try:
-        headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
-        response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
-        response_json = json.loads(response)
-        # print(response_json)
-        if response_json['resultCode'] == 0:
-            return response_json['data']
-        else:
-            return response_json['data']
-    except Exception:
-        print(traceback.format_exc())
+# def getRiskFactor(body=None):
+#     url = 'https://stq.niuguwang.com/factor/getriskfactor'
+#     try:
+#         headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
+#         response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
+#         # print(response)
+#         response_json = json.loads(response)
+#         # print(response_json)
+#         if response_json['resultCode'] == 0:
+#             return pd.DataFrame(response_json['data'])
+#         else:
+#             return pd.DataFrame()
+#     except Exception:
+#         print(traceback.format_exc())
+#
+# def upsertRiskFactor(body=None):
+#     url = 'https://stq.niuguwang.com/factor/addriskfactor'
+#     try:
+#         headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
+#         response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
+#         response_json = json.loads(response)
+#         # print(response_json)
+#         if response_json['resultCode'] == 0:
+#             return response_json['data']
+#         else:
+#             return response_json['data']
+#     except Exception:
+#         print(traceback.format_exc())
+#
+# def getRiskFactorColumns():
+#     url = 'https://stq.niuguwang.com/factor/GetRiskFactorColumns'
+#     try:
+#         headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
+#         response = requests.get(url,headers=headers).content.decode()
+#         response_json = json.loads(response)
+#         # print(response_json)
+#         if response_json['resultCode'] == 0:
+#             return response_json['data']
+#         else:
+#             return response_json['data']
+#     except Exception:
+#         print(traceback.format_exc())
+#
+#
+#
+#
+# def getStyleFactor(body=None):
+#     url = 'https://stq.niuguwang.com/factor/getstylefactor'
+#     try:
+#         headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
+#         response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
+#         # print(response)
+#         response_json = json.loads(response)
+#         # print(response_json)
+#         if response_json['resultCode'] == 0:
+#             return pd.DataFrame(response_json['data'])
+#         else:
+#             return pd.DataFrame()
+#     except Exception:
+#         print(traceback.format_exc())
+#
+# def upsertStyleFactor(body=None):
+#     url = 'https://stq.niuguwang.com/factor/addstylefactor'
+#     try:
+#         headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
+#         response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
+#         response_json = json.loads(response)
+#         # print(response_json)
+#         if response_json['resultCode'] == 0:
+#             return response_json['data']
+#         else:
+#             return response_json['data']
+#     except Exception:
+#         print(traceback.format_exc())
+#
+# def getStyleFactorColumns():
+#     url = 'https://stq.niuguwang.com/factor/GetStyleFactorColumns'
+#     try:
+#         headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
+#         response = requests.get(url,headers=headers).content.decode()
+#         response_json = json.loads(response)
+#         # print(response_json)
+#         if response_json['resultCode'] == 0:
+#             return response_json['data']
+#         else:
+#             return response_json['data']
+#     except Exception:
+#         print(traceback.format_exc())
+#
+#
+#
+#
+# def getCSResidual(body=None):
+#     url = 'https://stq.niuguwang.com/factor/getcsresidual'
+#     try:
+#         headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
+#         response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
+#         # print(response)
+#         response_json = json.loads(response)
+#         # print(response_json)
+#         if response_json['resultCode'] == 0:
+#             return pd.DataFrame(response_json['data'])
+#         else:
+#             return pd.DataFrame()
+#     except Exception:
+#         print(traceback.format_exc())
+#
+# def getCSResidualColumns():
+#     url = 'https://stq.niuguwang.com/factor/GetCSResidualColumns'
+#     try:
+#         headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
+#         response = requests.get(url,headers=headers).content.decode()
+#         response_json = json.loads(response)
+#         # print(response_json)
+#         if response_json['resultCode'] == 0:
+#             return response_json['data']
+#         else:
+#             return response_json['data']
+#     except Exception:
+#         print(traceback.format_exc())
+#
+# def getCSFactorReturns(start=None,end=None):
+#     body = {'start':str(start)[:10],'end':str(end)[:10]}
+#     url = 'https://stq.niuguwang.com/factor/getcsfactorreturns'
+#     try:
+#         headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
+#         response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
+#         # print(response)
+#         response_json = json.loads(response)
+#         # print(response_json)
+#         if response_json['resultCode'] == 0:
+#             return pd.DataFrame(response_json['data'])
+#         else:
+#             return pd.DataFrame()
+#     except Exception:
+#         print(traceback.format_exc())
+#
+# def getCSR2(start=None,end=None):
+#     body = {'start':str(start)[:10],'end':str(end)[:10]}
+#     url = 'https://stq.niuguwang.com/factor/getcsr2'
+#     try:
+#         headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
+#         response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
+#         # print(response)
+#         response_json = json.loads(response)
+#         # print(response_json)
+#         if response_json['resultCode'] == 0:
+#             return pd.DataFrame(response_json['data'])
+#         else:
+#             return pd.DataFrame()
+#     except Exception:
+#         print(traceback.format_exc())
+#
+# def getCSTStats(start=None,end=None):
+#     body = {'start':str(start)[:10],'end':str(end)[:10]}
+#     url = 'https://stq.niuguwang.com/factor/getcststats'
+#     try:
+#         headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
+#         response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
+#         # print(response)
+#         response_json = json.loads(response)
+#         # print(response_json)
+#         if response_json['resultCode'] == 0:
+#             return pd.DataFrame(response_json['data'])
+#         else:
+#             return pd.DataFrame()
+#     except Exception:
+#         print(traceback.format_exc())
+#
+#
+#
+# def upsertCSResidual(body=None):
+#     url = 'https://stq.niuguwang.com/factor/addcsresidual'
+#     try:
+#         headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
+#         response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
+#         response_json = json.loads(response)
+#         # print(response_json)
+#         if response_json['resultCode'] == 0:
+#             return response_json['data']
+#         else:
+#             return response_json['data']
+#     except Exception:
+#         print(traceback.format_exc())
+#
+# def upsertCSFactorReturns(body=None):
+#     url = 'https://stq.niuguwang.com/factor/addcsfactorreturns'
+#     try:
+#         headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
+#         response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
+#         response_json = json.loads(response)
+#         # print(response_json)
+#         if response_json['resultCode'] == 0:
+#             return response_json['data']
+#         else:
+#             return response_json['data']
+#     except Exception:
+#         print(traceback.format_exc())
+#
+# def upsertCSR2(body=None):
+#     url = 'https://stq.niuguwang.com/factor/addcsr2'
+#     try:
+#         headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
+#         response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
+#         response_json = json.loads(response)
+#         # print(response_json)
+#         if response_json['resultCode'] == 0:
+#             return response_json['data']
+#         else:
+#             return response_json['data']
+#     except Exception:
+#         print(traceback.format_exc())
+#
+# def upsertCSTStats(body=None):
+#     url = 'https://stq.niuguwang.com/factor/addcststats'
+#     try:
+#         headers = {"Content-Type": "application/json","Ngw-Token":"Ngw123456",'User-Agent':get_ua()}
+#         response = requests.post(url,data=json.dumps(body), headers=headers).content.decode()
+#         response_json = json.loads(response)
+#         # print(response_json)
+#         if response_json['resultCode'] == 0:
+#             return response_json['data']
+#         else:
+#             return response_json['data']
+#     except Exception:
+#         print(traceback.format_exc())
 
 if __name__ == '__main__':
     t11 = time.time()
